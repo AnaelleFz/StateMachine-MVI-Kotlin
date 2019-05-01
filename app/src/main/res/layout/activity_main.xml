@@ -20,7 +20,7 @@
     <Button
             android:id="@+id/btn_stop"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btn_init"
+            app:layout_constraintEnd_toStartOf="@id/btn_alert"
             app:layout_constraintTop_toBottomOf="@id/text_state"
             android:text="Stop"
             android:layout_margin="16dp"
@@ -28,11 +28,21 @@
             android:layout_height="wrap_content"/>
 
     <Button
-            android:id="@+id/btn_init"
+            android:id="@+id/btn_close"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btn_alert"
+            app:layout_constraintTop_toBottomOf="@id/text_state"
+            android:text="Fermer"
+            android:layout_margin="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    <Button
+            android:id="@+id/btn_alert"
             app:layout_constraintStart_toEndOf="@id/btn_stop"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/text_state"
-            android:text="init"
+            android:text="Alert"
             android:layout_margin="16dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
@@ -40,7 +50,7 @@
     <Button
             android:id="@+id/btn_start"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btn_init"
+            app:layout_constraintEnd_toStartOf="@id/btn_alert"
             app:layout_constraintTop_toBottomOf="@id/btn_stop"
             android:text="Start"
             android:layout_margin="16dp"
@@ -57,14 +67,5 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
-    <Button
-            android:id="@+id/btn_alert"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_start"
-            android:text="Alert"
-            android:layout_margin="16dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
