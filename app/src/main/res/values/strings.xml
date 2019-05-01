@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">StateMachine</string>
+    <string name="stop_state">Stop State</string>
+    <string name="init_state">Init State</string>
+    <string name="start_state">Start State</string>
+    <string name="error_state">Error State</string>
+    <string name="alert_state">Alert State</string>
 </resources>
