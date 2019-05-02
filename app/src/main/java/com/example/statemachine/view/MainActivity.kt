@@ -5,7 +5,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.statemachine.R
 import com.example.statemachine.model.MainPresenter
-import com.example.statemachine.model.State
+import com.example.statemachine.model.statemachine.State
 import com.jakewharton.rxbinding3.view.clicks
 import kotlinx.android.synthetic.main.activity_main.*
 

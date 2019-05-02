@@ -1,4 +1,4 @@
-package com.example.statemachine.model
+package com.example.statemachine.model.statemachine
 
 sealed class State {
     data class StopState(val data: String) : State()

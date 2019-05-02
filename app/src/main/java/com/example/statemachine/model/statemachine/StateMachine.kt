@@ -1,4 +1,4 @@
-package com.example.statemachine.model
+package com.example.statemachine.model.statemachine
 
 import io.reactivex.subjects.PublishSubject
 

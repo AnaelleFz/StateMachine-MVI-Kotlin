@@ -1,5 +1,7 @@
 package com.example.statemachine.model
 
+import com.example.statemachine.model.statemachine.Event
+import com.example.statemachine.model.statemachine.StateMachine
 import com.example.statemachine.view.MainActivity
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
@@ -10,7 +12,6 @@ class MainPresenter {
     private lateinit var view: MainActivity
     private lateinit var stateMachine: StateMachine
 
-
     fun bind(view: MainActivity) {
         this.view = view
         stateMachine = StateMachine()
@@ -19,14 +20,14 @@ class MainPresenter {
         )
     }
 
-    fun printEvent(event: Event) {
-        System.out.println(event)
-    }
-
     fun unbind() {
         if (!compositeDisposable.isDisposed) {
             compositeDisposable.dispose()
         }
+    }
+
+    private fun printEvent(event: Event) {
+        System.out.println(event)
     }
 
     private fun allEvents(): Observable<Event> {
