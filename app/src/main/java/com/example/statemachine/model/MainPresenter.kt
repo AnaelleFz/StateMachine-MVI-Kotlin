@@ -1,6 +1,7 @@
 package com.example.statemachine.model
 
 import com.example.statemachine.view.MainActivity
+import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 
 class MainPresenter {
@@ -13,9 +14,13 @@ class MainPresenter {
     fun bind(view: MainActivity) {
         this.view = view
         stateMachine = StateMachine()
-        compositeDisposable.add(observeStopAction())
-        compositeDisposable.add(observeStartAction())
-        compositeDisposable.add(observeStateChange())
+        compositeDisposable.add(
+            allEvents().subscribe { e -> printEvent(e) }
+        )
+    }
+
+    fun printEvent(event: Event) {
+        System.out.println(event)
     }
 
     fun unbind() {
@@ -24,16 +29,14 @@ class MainPresenter {
         }
     }
 
-    private fun observeStopAction() = view.stopEventIntent()
-        .doOnNext { stateMachine.onEventReceived(Event.STOP) }
-        .subscribe()
+    private fun allEvents(): Observable<Event> {
+        return (view.stopEventIntent().map { Event.STOP })
+            .mergeWith(view.alertEventItent().map { Event.ALERT })
+            .mergeWith(view.startEventIntent().map { Event.START })
+            .mergeWith(view.startEventIntent().map { Event.START })
+            .mergeWith(view.errorEventIntent().map { Event.ERROR })
+            .mergeWith(view.closeEventItent().map { Event.CLOSE })
+    }
 
-    private fun observeStartAction() = view.startEventIntent()
-        .doOnNext { stateMachine.onEventReceived(Event.START) }
-        .subscribe()
-
-    private fun observeStateChange() = stateMachine.publishStateChange
-        .doOnNext { state -> view.render(state) }
-        .subscribe()
 
 }
