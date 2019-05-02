@@ -5,7 +5,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.statemachine.R
 import com.example.statemachine.model.MainPresenter
-import com.example.statemachine.model.statemachine.State
+import com.example.statemachine.model.statemachine.StateEnum
 import com.jakewharton.rxbinding3.view.clicks
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -24,17 +24,17 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    fun render(state: State) {
-        when (state) {
-            is State.StopState -> renderStopState(state)
-            is State.InitState -> renderInitState(state)
-            is State.StartState -> renderStartState(state)
-            is State.ErrorState -> renderErrorState(state)
-            is State.AlertState -> renderAlertState(state)
+    fun render(stateEnum: StateEnum) {
+        when (stateEnum) {
+            StateEnum.StopState -> renderStopState()
+            StateEnum.InitState -> renderInitState()
+            StateEnum.StartState -> renderStartState()
+            StateEnum.ErrorState -> renderErrorState()
+            StateEnum.AlertState -> renderAlertState()
         }
     }
 
-    private fun renderStopState(dataState: State.StopState) {
+    private fun renderStopState() {
         text_state.setText(R.string.stop_state)
         btn_alert.visibility = View.INVISIBLE
         btn_stop.visibility = View.INVISIBLE
@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
         btn_close.visibility = View.INVISIBLE
     }
 
-    private fun renderStartState(dataState: State.StartState) {
+    private fun renderStartState() {
         text_state.setText(R.string.start_state)
         btn_alert.visibility = View.VISIBLE
         btn_stop.visibility = View.VISIBLE
@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
         btn_close.visibility = View.INVISIBLE
     }
 
-    private fun renderInitState(dataState: State.InitState) {
+    private fun renderInitState() {
         text_state.setText(R.string.init_state)
         btn_alert.visibility = View.INVISIBLE
         btn_stop.visibility = View.INVISIBLE
@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
         btn_close.visibility = View.INVISIBLE
     }
 
-    private fun renderErrorState(dataState: State.ErrorState) {
+    private fun renderErrorState() {
         text_state.setText(R.string.error_state)
         btn_alert.visibility = View.INVISIBLE
         btn_stop.visibility = View.VISIBLE
@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity() {
         btn_close.visibility = View.INVISIBLE
     }
 
-    private fun renderAlertState(dataState: State.AlertState) {
+    private fun renderAlertState() {
         text_state.setText(R.string.alert_state)
         text_state.setText(R.string.error_state)
         btn_alert.visibility = View.INVISIBLE
