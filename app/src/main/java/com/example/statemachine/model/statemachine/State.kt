@@ -1,10 +1,15 @@
 package com.example.statemachine.model.statemachine
 
-sealed class State {
-    data class StopState(val data: String) : State()
-    data class InitState(val data: String) : State()
-    data class StartState(val data: String) : State()
-    data class ErrorState(val data: String) : State()
-    data class AlertState(val data: String) : State()
-    object firstState : State()
+class State(val stateName: StateEnum) {
+
+    private val stepList = mutableListOf<Step>()
+
+    fun addStep(name: String, event: EventEnum, finalState: StateEnum) {
+        val step = Step(name, event, finalState)
+        stepList.add(step)
+    }
+
+    fun getStepForEvent(eventEnum: EventEnum): Step {
+        return stepList.first { it.event.equals(eventEnum) }
+    }
 }

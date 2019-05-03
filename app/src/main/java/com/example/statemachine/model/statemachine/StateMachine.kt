@@ -1,26 +1,30 @@
 package com.example.statemachine.model.statemachine
 
-import io.reactivex.subjects.PublishSubject
+class StateMachine(private val initialStateName: StateEnum) {
+    private lateinit var currentState: State
 
-class StateMachine {
+    private val stateList = mutableListOf<State>()
 
-    val publishStateChange = PublishSubject.create<State>()
-
-    fun onEventReceived(event: Event) {
-        when (event) {
-            Event.START -> onStartEventReceived()
-            Event.STOP -> onStopEventReceived()
-        }
+    fun initStateMachine() {
+        currentState = getStateByName(initialStateName)
     }
 
-    fun onStopEventReceived() {
-        val newState = State.StopState("StopState")
-        publishStateChange.onNext(newState)
+    fun addState(name: StateEnum, init: State.() -> Unit) {
+        val state = State(name)
+        state.init()
+        stateList.add(state)
     }
 
-    fun onStartEventReceived() {
-        val newState = State.StartState("StartState")
-        publishStateChange.onNext(newState)
+    fun onEvent(eventEnum: EventEnum): StateEnum {
+        val edge = currentState.getStepForEvent(eventEnum)
+        currentState = getStateByName(edge.finalState)
+        return currentState.stateName
+    }
 
+    fun getStateByName(name: StateEnum): State {
+        val result = stateList.firstOrNull { it.stateName == name }
+            ?: throw NoSuchElementException(name.toString())
+
+        return result
     }
 }
