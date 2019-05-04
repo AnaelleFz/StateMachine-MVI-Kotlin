@@ -1,30 +1,59 @@
 package com.example.statemachine.model
 
+import android.util.Log
 import com.example.statemachine.model.statemachine.EventEnum
 import com.example.statemachine.model.statemachine.StateEnum
 import com.example.statemachine.model.statemachine.StateMachine
 import com.example.statemachine.view.MainActivity
 import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 
 class MainPresenter {
+
+    private val TAG = "MainPresenter"
+    private val errorCollectEvent = "An error occurred trying to collect events"
+    private val errorRetrieveNextState = "An error occurred trying to retrieve next state"
 
     private val compositeDisposable = CompositeDisposable()
     private lateinit var view: MainActivity
     private lateinit var stateMachine: StateMachine
+    private val eventBus = EventBus()
 
+    /**
+     * When mainPresenter is binding with view :
+     *  - Initialize State Machine
+     *  - Start to observe and collect all ui event
+     */
     fun bind(view: MainActivity) {
         this.view = view
         stateMachine = initStateMachine()
+
+        // Events reception :
         compositeDisposable.add(
-            collectedallEvents()
-                .subscribe { e -> retrieveNewState(e) }
+            collectAllEvents()
+                .subscribe({ event -> eventBus.passEvent(event) },
+                    { t ->
+                        Log.e(TAG, errorCollectEvent, t)
+                        eventBus.passEvent(EventEnum.ERROR)
+                    })
         )
+
+        // Events consumption :
         compositeDisposable.add(
-            collectedallEvents()
-                .flatMap { event -> retrieveNewState(event) }
+            eventBus.observeEvent()
+                .flatMap { event -> retrieveNextState(event) }
                 .doAfterNext { state -> view.render(state) }
-                .subscribe { state -> System.out.println(state) }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { state -> System.out.println(state) },
+                    { t ->
+                        Log.e(TAG, errorRetrieveNextState, t)
+                        view.render(StateEnum.ErrorState)
+                    }
+                )
         )
     }
 
@@ -34,7 +63,10 @@ class MainPresenter {
         }
     }
 
-    private fun collectedallEvents(): Observable<EventEnum> {
+    /**
+     * Collect all events from UI in one observable
+     */
+    private fun collectAllEvents(): Observable<EventEnum> {
         return (view.stopEventIntent().map { EventEnum.STOP })
             .mergeWith(view.alertEventItent().map { EventEnum.ALERT })
             .mergeWith(view.startEventIntent().map { EventEnum.START })
@@ -43,7 +75,7 @@ class MainPresenter {
             .mergeWith(view.closeEventItent().map { EventEnum.CLOSE })
     }
 
-    private fun retrieveNewState(event: EventEnum): Observable<StateEnum> {
+    private fun retrieveNextState(event: EventEnum): Observable<StateEnum> {
         return Observable.fromCallable {
             stateMachine.onEvent(event)
         }
