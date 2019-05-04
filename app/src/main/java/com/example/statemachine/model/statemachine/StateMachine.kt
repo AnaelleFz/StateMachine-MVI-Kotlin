@@ -1,5 +1,7 @@
 package com.example.statemachine.model.statemachine
 
+import com.example.statemachine.model.EventEnum
+
 class StateMachine(private val initialStateName: StateEnum) {
     private lateinit var currentState: State
 

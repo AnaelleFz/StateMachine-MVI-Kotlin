@@ -4,7 +4,7 @@ import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
-import com.example.statemachine.model.statemachine.EventEnum
+import com.example.statemachine.model.EventEnum
 import io.reactivex.Observer
 
 class AlertService : Service() {

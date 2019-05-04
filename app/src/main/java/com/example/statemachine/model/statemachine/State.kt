@@ -1,5 +1,7 @@
 package com.example.statemachine.model.statemachine
 
+import com.example.statemachine.model.EventEnum
+
 class State(val stateName: StateEnum) {
 
     private val stepList = mutableListOf<Step>()

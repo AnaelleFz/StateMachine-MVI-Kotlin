@@ -1,6 +1,5 @@
 package com.example.statemachine.model
 
-import com.example.statemachine.model.statemachine.EventEnum
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 
