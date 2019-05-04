@@ -21,15 +21,18 @@ class MainPresenter {
     private lateinit var stateMachine: StateMachine
     private val eventBus = EventBus()
 
+    /**
+     * When mainPresenter is binding with view :
+     *  - Initialize State Machine
+     *  - Start to observe and collect all ui event
+     */
     fun bind(view: MainActivity) {
         this.view = view
         stateMachine = initStateMachine()
+
+        // Events reception :
         compositeDisposable.add(
-            collectedAllEvents()
-                .subscribe { e -> retrieveNewState(e) }
-        )
-        compositeDisposable.add(
-            collectedAllEvents()
+            collectAllEvents()
                 .subscribe({ event -> eventBus.passEvent(event) },
                     { t ->
                         Log.e(TAG, errorCollectEvent, t)
@@ -37,9 +40,10 @@ class MainPresenter {
                     })
         )
 
+        // Events consumption :
         compositeDisposable.add(
             eventBus.observeEvent()
-                .flatMap { event -> retrieveNewState(event) }
+                .flatMap { event -> retrieveNextState(event) }
                 .doAfterNext { state -> view.render(state) }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -59,7 +63,10 @@ class MainPresenter {
         }
     }
 
-    private fun collectedAllEvents(): Observable<EventEnum> {
+    /**
+     * Collect all events from UI in one observable
+     */
+    private fun collectAllEvents(): Observable<EventEnum> {
         return (view.stopEventIntent().map { EventEnum.STOP })
             .mergeWith(view.alertEventItent().map { EventEnum.ALERT })
             .mergeWith(view.startEventIntent().map { EventEnum.START })
@@ -68,7 +75,7 @@ class MainPresenter {
             .mergeWith(view.closeEventItent().map { EventEnum.CLOSE })
     }
 
-    private fun retrieveNewState(event: EventEnum): Observable<StateEnum> {
+    private fun retrieveNextState(event: EventEnum): Observable<StateEnum> {
         return Observable.fromCallable {
             stateMachine.onEvent(event)
         }
