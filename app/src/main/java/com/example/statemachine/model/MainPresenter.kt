@@ -1,7 +1,6 @@
 package com.example.statemachine.model
 
 import android.util.Log
-import com.example.statemachine.model.statemachine.StateEnum
 import com.example.statemachine.model.statemachine.StateMachine
 import com.example.statemachine.view.MainActivity
 import io.reactivex.Observable

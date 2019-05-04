@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.statemachine.R
 import com.example.statemachine.model.EventEnum
 import com.example.statemachine.model.MainPresenter
-import com.example.statemachine.model.statemachine.StateEnum
+import com.example.statemachine.model.StateEnum
 import com.example.statemachine.service.AlertService
 import com.jakewharton.rxbinding3.view.clicks
 import io.reactivex.subjects.PublishSubject

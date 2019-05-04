@@ -1,4 +1,4 @@
-package com.example.statemachine.model.statemachine
+package com.example.statemachine.model
 
 enum class StateEnum {
     StopState,

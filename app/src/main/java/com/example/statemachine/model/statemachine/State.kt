@@ -1,6 +1,7 @@
 package com.example.statemachine.model.statemachine
 
 import com.example.statemachine.model.EventEnum
+import com.example.statemachine.model.StateEnum
 
 class State(val stateName: StateEnum) {
 
