@@ -64,7 +64,7 @@ class MainPresenter {
      */
     private fun collectAllEvents(): Observable<EventEnum> {
         return collectAllUiEvents()
-            .mergeWith(view.alertObserver)
+            .mergeWith(view.alertServiceObserver)
     }
 
     /**

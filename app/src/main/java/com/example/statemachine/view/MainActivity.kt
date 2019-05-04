@@ -25,13 +25,13 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var intentAlertService: Intent
 
-    val alertObserver = PublishSubject.create<EventEnum>()
+    val alertServiceObserver = PublishSubject.create<EventEnum>()
 
     private val alertServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
             val binder = service as AlertService.AlertServiceBinder
             alertService = binder.getService()
-            alertService.setAlertConsumer { eventEnum -> alertObserver.onNext(eventEnum) }
+            alertService.setAlertConsumer { eventEnum -> alertServiceObserver.onNext(eventEnum) }
         }
 
         override fun onServiceDisconnected(name: ComponentName) {

@@ -20,7 +20,9 @@ class StateMachine(private val initialStateName: StateEnum) {
 
     fun onEvent(eventEnum: EventEnum): StateEnum {
         val edge = currentState.getStepForEvent(eventEnum)
-        currentState = getStateByName(edge.finalState)
+        if (edge != null) {
+            currentState = getStateByName(edge.finalState)
+        }
         return currentState.stateName
     }
 

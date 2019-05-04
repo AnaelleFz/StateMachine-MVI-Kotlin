@@ -15,13 +15,13 @@ class AlertService : Service() {
     private lateinit var alertConsumer: (EventEnum) -> Unit
 
     private val alerts = listOf(
-        Alert(EventEnum.ALERT, "alert 1", 100),
-        Alert(EventEnum.ALERT, "alert 2", 150),
-        Alert(EventEnum.ALERT, "alert 3", 300)
+        Alert(EventEnum.ALERT, "alert 1", 10),
+        Alert(EventEnum.ALERT, "alert 2", 15),
+        Alert(EventEnum.ALERT, "alert 3", 30)
     )
 
     override fun onBind(intent: Intent?): IBinder? {
-        sendAlertAndError()
+        sendAlert()
         return alertServiceBinder
     }
 
@@ -34,18 +34,14 @@ class AlertService : Service() {
      * Add a delay equals to alert.delayInSecond.
      * Finally pass alert.event to alertConsumer.
      *
-     * If an error occurred pass EventEnum.Error to alertConsumer
-     *
      */
-    fun sendAlertAndError() {
+    fun sendAlert() {
         getRandomNumber()
             .map { i -> alerts[i] }
             .flatMap { alert ->
                 Single.just(alert)
                     .delay(alert.delayInSecond, TimeUnit.SECONDS)
             }
-            // When getRandomNumber throws IndexOutOfBoundsException
-            .doOnError { alertConsumer(EventEnum.ERROR) }
             .doOnSuccess { alert -> alertConsumer(alert.event) }
             .repeat()
             .subscribe()
@@ -53,7 +49,7 @@ class AlertService : Service() {
 
     private fun getRandomNumber(): Single<Int> {
         return Single.fromCallable {
-            (0 until alerts.size + 1).random()
+            (0 until alerts.size).random()
         }
     }
 
