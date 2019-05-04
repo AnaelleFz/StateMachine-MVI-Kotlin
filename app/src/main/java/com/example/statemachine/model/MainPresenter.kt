@@ -34,7 +34,6 @@ class MainPresenter {
                 .subscribe({ event -> eventBus.passEvent(event) },
                     { t ->
                         Log.e(TAG, errorCollectEvent, t)
-                        eventBus.passEvent(EventEnum.ERROR)
                     })
         )
 
@@ -49,7 +48,6 @@ class MainPresenter {
                     { state -> System.out.println(state) },
                     { t ->
                         Log.e(TAG, errorRetrieveNextState, t)
-                        view.render(StateEnum.ErrorState)
                     }
                 )
         )

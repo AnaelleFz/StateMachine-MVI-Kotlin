@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
             val binder = service as AlertService.AlertServiceBinder
             alertService = binder.getService()
-            alertService.setAlertObserver(alertObserver)
+            alertService.setAlertConsumer { eventEnum -> alertObserver.onNext(eventEnum) }
         }
 
         override fun onServiceDisconnected(name: ComponentName) {
@@ -42,10 +42,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // bind and start alert service
+        // bind alert service
         intentAlertService = Intent(applicationContext, AlertService::class.java)
-        bindService(intent, alertServiceConnection, Context.BIND_AUTO_CREATE)
-        startService(intentAlertService)
+        bindService(intentAlertService, alertServiceConnection, Context.BIND_AUTO_CREATE)
 
         // init/bind presenter
         presenter.bind(this)
@@ -55,7 +54,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        stopService(intentAlertService)
+        unbindService(alertServiceConnection)
         presenter.unbind()
         super.onDestroy()
     }
