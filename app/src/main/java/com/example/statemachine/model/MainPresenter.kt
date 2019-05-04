@@ -42,7 +42,7 @@ class MainPresenter {
 
         // Events consumption :
         compositeDisposable.add(
-            eventBus.observeEvent()
+            eventBus.getEvents()
                 .flatMap { event -> retrieveNextState(event) }
                 .doAfterNext { state -> view.render(state) }
                 .subscribeOn(Schedulers.io())
@@ -64,9 +64,17 @@ class MainPresenter {
     }
 
     /**
-     * Collect all events from UI in one observable
+     * Merge UI events and events from alertService
      */
     private fun collectAllEvents(): Observable<EventEnum> {
+        return collectAllUiEvents()
+            .mergeWith(view.alertObserver)
+    }
+
+    /**
+     * Collect all events from UI in one observable
+     */
+    private fun collectAllUiEvents(): Observable<EventEnum> {
         return (view.stopEventIntent().map { EventEnum.STOP })
             .mergeWith(view.alertEventItent().map { EventEnum.ALERT })
             .mergeWith(view.startEventIntent().map { EventEnum.START })

@@ -12,7 +12,7 @@ class EventBus {
         eventPublishSubject.onNext(event)
     }
 
-    fun observeEvent(): Observable<EventEnum> {
+    fun getEvents(): Observable<EventEnum> {
         return eventPublishSubject
     }
 }
