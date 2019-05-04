@@ -5,26 +5,37 @@ import com.example.statemachine.model.statemachine.StateEnum
 import com.example.statemachine.model.statemachine.StateMachine
 import com.example.statemachine.view.MainActivity
 import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 
 class MainPresenter {
 
     private val compositeDisposable = CompositeDisposable()
     private lateinit var view: MainActivity
     private lateinit var stateMachine: StateMachine
+    private val eventBus = EventBus()
 
     fun bind(view: MainActivity) {
         this.view = view
         stateMachine = initStateMachine()
         compositeDisposable.add(
-            collectedallEvents()
+            collectedAllEvents()
                 .subscribe { e -> retrieveNewState(e) }
         )
         compositeDisposable.add(
-            collectedallEvents()
+            collectedAllEvents()
+                // todo handle error
+                .subscribe { event -> eventBus.passEvent(event) }
+        )
+
+        compositeDisposable.add(
+            eventBus.observeEvent()
                 .flatMap { event -> retrieveNewState(event) }
                 .doAfterNext { state -> view.render(state) }
-                .subscribe { state -> System.out.println(state) }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe()
         )
     }
 
@@ -34,7 +45,7 @@ class MainPresenter {
         }
     }
 
-    private fun collectedallEvents(): Observable<EventEnum> {
+    private fun collectedAllEvents(): Observable<EventEnum> {
         return (view.stopEventIntent().map { EventEnum.STOP })
             .mergeWith(view.alertEventItent().map { EventEnum.ALERT })
             .mergeWith(view.startEventIntent().map { EventEnum.START })
