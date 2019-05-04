@@ -1,5 +1,6 @@
 package com.example.statemachine.model
 
+import android.util.Log
 import com.example.statemachine.model.statemachine.EventEnum
 import com.example.statemachine.model.statemachine.StateEnum
 import com.example.statemachine.model.statemachine.StateMachine
@@ -10,6 +11,10 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
 class MainPresenter {
+
+    private val TAG = "MainPresenter"
+    private val errorCollectEvent = "An error occurred trying to collect events"
+    private val errorRetrieveNextState = "An error occurred trying to retrieve next state"
 
     private val compositeDisposable = CompositeDisposable()
     private lateinit var view: MainActivity
@@ -25,8 +30,11 @@ class MainPresenter {
         )
         compositeDisposable.add(
             collectedAllEvents()
-                // todo handle error
-                .subscribe { event -> eventBus.passEvent(event) }
+                .subscribe({ event -> eventBus.passEvent(event) },
+                    { t ->
+                        Log.e(TAG, errorCollectEvent, t)
+                        eventBus.passEvent(EventEnum.ERROR)
+                    })
         )
 
         compositeDisposable.add(
@@ -35,7 +43,13 @@ class MainPresenter {
                 .doAfterNext { state -> view.render(state) }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe()
+                .subscribe(
+                    { state -> System.out.println(state) },
+                    { t ->
+                        Log.e(TAG, errorRetrieveNextState, t)
+                        view.render(StateEnum.ErrorState)
+                    }
+                )
         )
     }
 
