@@ -71,59 +71,44 @@ class MainActivity : AppCompatActivity() {
 
     private fun renderStopState() {
         text_state.setText(R.string.stop_state)
-        btn_alert.visibility = View.INVISIBLE
         btn_stop.visibility = View.INVISIBLE
         btn_start.visibility = View.VISIBLE
-        btn_error.visibility = View.VISIBLE
         btn_close.visibility = View.INVISIBLE
     }
 
     private fun renderStartState() {
+        //motionLayout.transitionToEnd()
         text_state.setText(R.string.start_state)
-        btn_alert.visibility = View.VISIBLE
         btn_stop.visibility = View.VISIBLE
-        btn_start.visibility = View.INVISIBLE
-        btn_error.visibility = View.VISIBLE
-        btn_close.visibility = View.INVISIBLE
+        btn_start.visibility = View.GONE
+        btn_close.visibility = View.GONE
     }
 
     private fun renderInitState() {
         text_state.setText(R.string.init_state)
-        btn_alert.visibility = View.INVISIBLE
-        btn_stop.visibility = View.INVISIBLE
-        btn_start.visibility = View.INVISIBLE
-        btn_error.visibility = View.VISIBLE
-        btn_close.visibility = View.INVISIBLE
+        btn_stop.visibility = View.GONE
+        btn_start.visibility = View.GONE
+        btn_close.visibility = View.GONE
+
     }
 
     private fun renderErrorState() {
         text_state.setText(R.string.error_state)
-        btn_alert.visibility = View.INVISIBLE
         btn_stop.visibility = View.VISIBLE
-        btn_start.visibility = View.INVISIBLE
-        btn_error.visibility = View.INVISIBLE
-        btn_close.visibility = View.INVISIBLE
+        btn_start.visibility = View.GONE
+        btn_close.visibility = View.GONE
     }
 
     private fun renderAlertState() {
         text_state.setText(R.string.alert_state)
-        text_state.setText(R.string.error_state)
-        btn_alert.visibility = View.INVISIBLE
-        btn_stop.visibility = View.INVISIBLE
-        btn_start.visibility = View.INVISIBLE
-        btn_error.visibility = View.INVISIBLE
-        btn_close.visibility = View.INVISIBLE
+        btn_stop.visibility = View.GONE
+        btn_start.visibility = View.GONE
+        btn_close.visibility = View.VISIBLE
     }
 
     fun stopEventIntent() = btn_stop.clicks()
 
     fun startEventIntent() = btn_start.clicks()
 
-    fun errorEventIntent() = btn_error.clicks()
-
-    fun alertEventItent() = btn_alert.clicks()
-
     fun closeEventItent() = btn_close.clicks()
-
-
 }

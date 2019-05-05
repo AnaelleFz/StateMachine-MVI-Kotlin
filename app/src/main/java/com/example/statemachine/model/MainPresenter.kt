@@ -100,10 +100,8 @@ class MainPresenter {
      */
     private fun collectAllUiEvents(): Observable<EventEnum> {
         return (view.stopEventIntent().map { EventEnum.STOP })
-            .mergeWith(view.alertEventItent().map { EventEnum.ALERT })
             .mergeWith(view.startEventIntent().map { EventEnum.START })
             .mergeWith(view.startEventIntent().map { EventEnum.START })
-            .mergeWith(view.errorEventIntent().map { EventEnum.ERROR })
             .mergeWith(view.closeEventItent().map { EventEnum.CLOSE })
     }
 
