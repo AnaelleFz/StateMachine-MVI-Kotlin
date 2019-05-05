@@ -44,6 +44,7 @@ class MainPresenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { event -> sendStartTimerEvent(event) }
+                .flatMap { event -> sendErrorAndCloseEvent(event) }
                 .flatMap { event -> retrieveNextState(event) }
                 .doAfterNext { state -> view.render(state) }
                 .subscribe(
@@ -56,7 +57,7 @@ class MainPresenter {
     }
 
     /**
-     * If event is Event.START
+     * If event is EventEnum.START
      * Then pass EventEnum.START_AND_TIMER_ENDS to eventBus
      * after 3 seconds delay.
      */
@@ -67,6 +68,17 @@ class MainPresenter {
             }, 3000)
 
         }
+    }
+
+    /**
+     * If event is EventEnum.CLOSE and the last event set is EventEnum.Error
+     * Then transform EventEnum.CLOSE in EventEnum.ERROR_AND_CLOSE
+     */
+    fun sendErrorAndCloseEvent(event: EventEnum): Observable<EventEnum> {
+        if (event == EventEnum.CLOSE && eventBus.lastEvent == EventEnum.ERROR) {
+            return Observable.just(EventEnum.ERROR_AND_CLOSE)
+        }
+        return Observable.just(event)
     }
 
     fun unbind() {

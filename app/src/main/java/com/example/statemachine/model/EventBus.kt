@@ -7,8 +7,11 @@ class EventBus {
 
     val eventPublishSubject = PublishSubject.create<EventEnum>()
 
+    var lastEvent: EventEnum? = null
+
     fun passEvent(event: EventEnum) {
         eventPublishSubject.onNext(event)
+        lastEvent = event
     }
 
     fun getEvents(): Observable<EventEnum> {
