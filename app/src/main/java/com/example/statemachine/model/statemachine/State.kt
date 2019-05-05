@@ -1,5 +1,8 @@
 package com.example.statemachine.model.statemachine
 
+import com.example.statemachine.model.EventEnum
+import com.example.statemachine.model.StateEnum
+
 class State(val stateName: StateEnum) {
 
     private val stepList = mutableListOf<Step>()
@@ -9,7 +12,7 @@ class State(val stateName: StateEnum) {
         stepList.add(step)
     }
 
-    fun getStepForEvent(eventEnum: EventEnum): Step {
-        return stepList.first { it.event.equals(eventEnum) }
+    fun getStepForEvent(eventEnum: EventEnum): Step? {
+        return stepList.firstOrNull { it.event == eventEnum }
     }
 }

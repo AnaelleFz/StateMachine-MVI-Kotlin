@@ -1,27 +1,60 @@
 package com.example.statemachine.view
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
+import android.os.IBinder
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.statemachine.R
+import com.example.statemachine.model.EventEnum
 import com.example.statemachine.model.MainPresenter
-import com.example.statemachine.model.statemachine.StateEnum
+import com.example.statemachine.model.StateEnum
+import com.example.statemachine.service.AlertService
 import com.jakewharton.rxbinding3.view.clicks
+import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
-    val presenter = MainPresenter()
+    private val presenter = MainPresenter()
+
+    private lateinit var alertService: AlertService
+
+    private lateinit var intentAlertService: Intent
+
+    val alertServiceObserver = PublishSubject.create<EventEnum>()
+
+    private val alertServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(className: ComponentName, service: IBinder) {
+            val binder = service as AlertService.AlertServiceBinder
+            alertService = binder.getService()
+            alertService.setAlertConsumer { eventEnum -> alertServiceObserver.onNext(eventEnum) }
+        }
+
+        override fun onServiceDisconnected(name: ComponentName) {
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // bind alert service
+        intentAlertService = Intent(applicationContext, AlertService::class.java)
+        bindService(intentAlertService, alertServiceConnection, Context.BIND_AUTO_CREATE)
+
+        // init/bind presenter
+        presenter.bind(this)
+
         // todo retrieve init event in an other way
         renderStopState()
-        presenter.bind(this)
     }
 
     override fun onDestroy() {
+        unbindService(alertServiceConnection)
         presenter.unbind()
         super.onDestroy()
     }
@@ -91,5 +124,6 @@ class MainActivity : AppCompatActivity() {
     fun alertEventItent() = btn_alert.clicks()
 
     fun closeEventItent() = btn_close.clicks()
+
 
 }

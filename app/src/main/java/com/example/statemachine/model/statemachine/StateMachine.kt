@@ -1,5 +1,8 @@
 package com.example.statemachine.model.statemachine
 
+import com.example.statemachine.model.EventEnum
+import com.example.statemachine.model.StateEnum
+
 class StateMachine(private val initialStateName: StateEnum) {
     private lateinit var currentState: State
 
@@ -17,7 +20,9 @@ class StateMachine(private val initialStateName: StateEnum) {
 
     fun onEvent(eventEnum: EventEnum): StateEnum {
         val edge = currentState.getStepForEvent(eventEnum)
-        currentState = getStateByName(edge.finalState)
+        if (edge != null) {
+            currentState = getStateByName(edge.finalState)
+        }
         return currentState.stateName
     }
 

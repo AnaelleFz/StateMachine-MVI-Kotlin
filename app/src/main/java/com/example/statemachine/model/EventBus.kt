@@ -1,6 +1,5 @@
 package com.example.statemachine.model
 
-import com.example.statemachine.model.statemachine.EventEnum
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 
@@ -8,11 +7,14 @@ class EventBus {
 
     val eventPublishSubject = PublishSubject.create<EventEnum>()
 
+    var lastEvent: EventEnum? = null
+
     fun passEvent(event: EventEnum) {
         eventPublishSubject.onNext(event)
+        lastEvent = event
     }
 
-    fun observeEvent(): Observable<EventEnum> {
+    fun getEvents(): Observable<EventEnum> {
         return eventPublishSubject
     }
 }
