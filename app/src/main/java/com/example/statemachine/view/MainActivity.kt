@@ -49,7 +49,6 @@ class MainActivity : AppCompatActivity() {
         // init/bind presenter
         presenter.bind(this)
 
-        // todo retrieve init event in an other way
         renderStopState()
     }
 
