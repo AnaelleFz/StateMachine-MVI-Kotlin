@@ -58,7 +58,7 @@ fun createStateMachine(): StateMachine {
 
         addState(name = StateEnum.ErrorState) {
 
-            addStep(name = "Error to Stop", event = EventEnum.STOP, finalState = StateEnum.StopState)
+            addStep(name = "Error to Stop", event = EventEnum.RESET, finalState = StateEnum.StopState)
         }
 
         addState(name = StateEnum.InitState) {

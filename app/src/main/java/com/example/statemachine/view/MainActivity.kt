@@ -74,25 +74,28 @@ class MainActivity : AppCompatActivity() {
         text_state.setText(R.string.stop_state)
         btn_stop.visibility = View.INVISIBLE
         btn_start.visibility = View.VISIBLE
+        btn_reset.visibility = View.GONE
     }
 
     private fun renderStartState() {
         text_state.setText(R.string.start_state)
         btn_stop.visibility = View.VISIBLE
         btn_start.visibility = View.INVISIBLE
+        btn_reset.visibility = View.GONE
     }
 
     private fun renderInitState() {
         text_state.setText(R.string.init_state)
         btn_stop.visibility = View.INVISIBLE
         btn_start.visibility = View.INVISIBLE
-
+        btn_reset.visibility = View.GONE
     }
 
     private fun renderErrorState() {
         text_state.setText(R.string.error_state)
-        btn_stop.visibility = View.VISIBLE
-        btn_start.visibility = View.INVISIBLE
+        btn_stop.visibility = View.GONE
+        btn_start.visibility = View.GONE
+        btn_reset.visibility = View.VISIBLE
     }
 
     private fun renderAlertState() {
@@ -111,4 +114,6 @@ class MainActivity : AppCompatActivity() {
     fun stopEventIntent() = btn_stop.clicks()
 
     fun startEventIntent() = btn_start.clicks()
+
+    fun resetEventIntent() = btn_reset.clicks()
 }
