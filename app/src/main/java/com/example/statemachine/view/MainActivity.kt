@@ -7,6 +7,7 @@ import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.statemachine.R
 import com.example.statemachine.model.EventEnum
@@ -95,9 +96,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun renderAlertState() {
+        // build alert dialog
         text_state.setText(R.string.alert_state)
-        btn_stop.visibility = View.INVISIBLE
-        btn_start.visibility = View.INVISIBLE
+        val builder = AlertDialog.Builder(this@MainActivity)
+        builder.setTitle("Alert received")
+        builder.setMessage("Close alert dialog ?")
+        builder.setPositiveButton("OK") { dialog, which ->
+
+        }
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
     }
 
     fun stopEventIntent() = btn_stop.clicks()
