@@ -1,5 +1,6 @@
 package com.example.statemachine.model
 
+import android.os.Handler
 import android.util.Log
 import com.example.statemachine.model.statemachine.StateMachine
 import com.example.statemachine.view.MainActivity
@@ -40,6 +41,7 @@ class MainPresenter {
         // Events consumption :
         compositeDisposable.add(
             eventBus.getEvents()
+                .doOnNext { event -> sendStartTimerEvent(event) }
                 .flatMap { event -> retrieveNextState(event) }
                 .doAfterNext { state -> view.render(state) }
                 .subscribeOn(Schedulers.io())
@@ -51,6 +53,20 @@ class MainPresenter {
                     }
                 )
         )
+    }
+
+    /**
+     * If event is Event.START
+     * Then pass EventEnum.START_AND_TIMER_ENDS to eventBus
+     * after 3 seconds delay
+     */
+    fun sendStartTimerEvent(event: EventEnum) {
+        if (event == EventEnum.START) {
+            Handler().postDelayed({
+                eventBus.passEvent(EventEnum.START_AND_TIMER_ENDS)
+            }, 3000)
+
+        }
     }
 
     fun unbind() {
