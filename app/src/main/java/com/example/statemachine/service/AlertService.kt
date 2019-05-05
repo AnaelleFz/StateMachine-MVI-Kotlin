@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import com.example.statemachine.model.EventEnum
+import io.reactivex.Observable
 import io.reactivex.Single
 import java.util.concurrent.TimeUnit
 
@@ -12,7 +13,7 @@ class AlertService : Service() {
 
     private val alertServiceBinder = AlertServiceBinder()
 
-    private lateinit var alertConsumer: (EventEnum) -> Unit
+    private lateinit var alertConsumer: (EventEnum) -> Unit?
 
     private val alerts = listOf(
         Alert(EventEnum.ALERT, "alert 1", 10),
@@ -25,6 +26,7 @@ class AlertService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? {
         sendAlert()
+        sendErrorEveryMinute()
         return alertServiceBinder
     }
 
@@ -54,6 +56,21 @@ class AlertService : Service() {
         return Single.fromCallable {
             (0 until alerts.size).random()
         }
+    }
+
+    /**
+     * Send event error every minute to alertConsumer
+     */
+    private fun sendErrorEveryMinute() {
+        getError()
+            .delay(1, TimeUnit.MINUTES)
+            .doOnNext { error -> alertConsumer(error) }
+            .repeat()
+            .subscribe()
+    }
+
+    private fun getError(): Observable<EventEnum> {
+        return Observable.just(EventEnum.ERROR)
     }
 
     inner class AlertServiceBinder : Binder() {
