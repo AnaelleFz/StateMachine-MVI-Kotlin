@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.motion.widget.MotionLayout
+<androidx.constraintlayout.widget.ConstraintLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -15,37 +15,29 @@
             android:layout_height="wrap_content"
             android:text="Hello World!"
             android:padding="16dp"
+            android:layout_marginTop="16dp"
+            android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
 
     <Button
             android:id="@+id/btn_stop"
             android:text="Stop"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btn_start"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/text_state"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-    <Button
-            android:id="@+id/btn_close"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/text_state"
-            android:text="Fermer"
-            tools:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
     <Button
             android:id="@+id/btn_start"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btn_stop"
             app:layout_constraintTop_toBottomOf="@id/text_state"
             android:text="Start"
-            tools:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
 
-</androidx.constraintlayout.motion.widget.MotionLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

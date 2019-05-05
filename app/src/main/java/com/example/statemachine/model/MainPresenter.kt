@@ -102,7 +102,6 @@ class MainPresenter {
         return (view.stopEventIntent().map { EventEnum.STOP })
             .mergeWith(view.startEventIntent().map { EventEnum.START })
             .mergeWith(view.startEventIntent().map { EventEnum.START })
-            .mergeWith(view.closeEventItent().map { EventEnum.CLOSE })
     }
 
     private fun retrieveNextState(event: EventEnum): Observable<StateEnum> {
