@@ -21,6 +21,8 @@ class MainPresenter {
     private lateinit var stateMachine: StateMachine
     private val eventBus = EventBus()
 
+    val eventsBetweenAlerts: MutableList<EventEnum> = mutableListOf()
+
     /**
      * When mainPresenter is binding with view :
      *  - Initialize State Machine
@@ -44,6 +46,7 @@ class MainPresenter {
             eventBus.getEvents()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext { event -> saveEventsBetweenAlerts(event) }
                 .doOnNext { event -> sendStartTimerEvent(event) }
                 .flatMap { event -> sendErrorAndCloseEvent(event) }
                 .flatMap { event -> retrieveNextState(event) }
@@ -72,12 +75,21 @@ class MainPresenter {
         }
     }
 
+    fun saveEventsBetweenAlerts(event: EventEnum) {
+        if (event == EventEnum.ALERT && eventsBetweenAlerts.contains(EventEnum.CLOSE)) {
+            eventsBetweenAlerts.clear()
+            eventsBetweenAlerts.add(event)
+        } else {
+            eventsBetweenAlerts.add(event)
+        }
+    }
+
     /**
-     * If event is EventEnum.CLOSE and the last event set is EventEnum.Error
+     * If event is EventEnum.CLOSE and eventsBetweenAlerts contains EventEnum.ERROR
      * Then transform EventEnum.CLOSE in EventEnum.ERROR_AND_CLOSE
      */
     fun sendErrorAndCloseEvent(event: EventEnum): Observable<EventEnum> {
-        if (event == EventEnum.CLOSE && eventBus.lastEvent == EventEnum.ERROR) {
+        if (event == EventEnum.CLOSE && eventsBetweenAlerts.contains(EventEnum.ERROR)) {
             return Observable.just(EventEnum.ERROR_AND_CLOSE)
         }
         return Observable.just(event)

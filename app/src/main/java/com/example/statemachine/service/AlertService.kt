@@ -16,12 +16,7 @@ class AlertService : Service() {
     private lateinit var alertConsumer: (EventEnum) -> Unit?
 
     private val alerts = listOf(
-        Alert(EventEnum.ALERT, "alert 1", 10),
-        Alert(EventEnum.ALERT, "alert 2", 20),
-        Alert(EventEnum.ALERT, "alert 3", 30),
-        Alert(EventEnum.ALERT, "alert 4", 40),
-        Alert(EventEnum.ALERT, "alert 5", 50),
-        Alert(EventEnum.ALERT, "alert 6", 60)
+        Alert(EventEnum.ALERT, "alert 1", 30)
     )
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -48,7 +43,6 @@ class AlertService : Service() {
                     .delay(alert.delayInSecond, TimeUnit.SECONDS)
             }
             .doOnSuccess { alert -> alertConsumer(alert.event) }
-            .repeat()
             .subscribe()
     }
 
@@ -63,7 +57,7 @@ class AlertService : Service() {
      */
     private fun sendErrorEveryMinute() {
         getError()
-            .delay(1, TimeUnit.MINUTES)
+            .delay(60, TimeUnit.SECONDS)
             .doOnNext { error -> alertConsumer(error) }
             .repeat()
             .subscribe()
