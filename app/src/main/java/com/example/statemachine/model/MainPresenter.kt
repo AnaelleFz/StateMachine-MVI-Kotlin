@@ -47,6 +47,7 @@ class MainPresenter {
                 .doOnNext { event -> sendStartTimerEvent(event) }
                 .flatMap { event -> sendErrorAndCloseEvent(event) }
                 .flatMap { event -> retrieveNextState(event) }
+                .filter { state -> state != StateEnum.NoState }
                 .doAfterNext { state -> view.render(state) }
                 .subscribe(
                     { state -> System.out.println(state) },
@@ -104,6 +105,7 @@ class MainPresenter {
             .mergeWith(view.startEventIntent().map { EventEnum.START })
             .mergeWith(view.startEventIntent().map { EventEnum.START })
             .mergeWith(view.resetEventIntent().map { EventEnum.RESET })
+            .mergeWith(view.closeEventItent().map { EventEnum.CLOSE })
 
     }
 

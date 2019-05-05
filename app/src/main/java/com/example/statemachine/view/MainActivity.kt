@@ -75,6 +75,7 @@ class MainActivity : AppCompatActivity() {
         btn_stop.visibility = View.INVISIBLE
         btn_start.visibility = View.VISIBLE
         btn_reset.visibility = View.GONE
+        btn_close.visibility = View.GONE
     }
 
     private fun renderStartState() {
@@ -82,6 +83,7 @@ class MainActivity : AppCompatActivity() {
         btn_stop.visibility = View.VISIBLE
         btn_start.visibility = View.INVISIBLE
         btn_reset.visibility = View.GONE
+        btn_close.visibility = View.GONE
     }
 
     private fun renderInitState() {
@@ -89,6 +91,7 @@ class MainActivity : AppCompatActivity() {
         btn_stop.visibility = View.INVISIBLE
         btn_start.visibility = View.INVISIBLE
         btn_reset.visibility = View.GONE
+        btn_close.visibility = View.GONE
     }
 
     private fun renderErrorState() {
@@ -96,16 +99,20 @@ class MainActivity : AppCompatActivity() {
         btn_stop.visibility = View.GONE
         btn_start.visibility = View.GONE
         btn_reset.visibility = View.VISIBLE
+        btn_close.visibility = View.GONE
     }
 
     private fun renderAlertState() {
+        btn_stop.visibility = View.GONE
+        btn_start.visibility = View.GONE
+        btn_reset.visibility = View.GONE
+        btn_close.visibility = View.VISIBLE
         // build alert dialog
         text_state.setText(R.string.alert_state)
         val builder = AlertDialog.Builder(this@MainActivity)
         builder.setTitle("Alert received")
         builder.setMessage("Close alert dialog ?")
         builder.setPositiveButton("OK") { dialog, which ->
-
         }
         val dialog: AlertDialog = builder.create()
         dialog.show()
@@ -116,4 +123,6 @@ class MainActivity : AppCompatActivity() {
     fun startEventIntent() = btn_start.clicks()
 
     fun resetEventIntent() = btn_reset.clicks()
+
+    fun closeEventItent() = btn_close.clicks()
 }

@@ -19,14 +19,17 @@ class StateMachine(private val initialStateName: StateEnum) {
     }
 
     /**
-     * When event is received update state
+     * When event is received,
+     * if edge exist for current state and event,
+     * then update state, otherwise send StateEnum.NoState
      */
     fun onEvent(eventEnum: EventEnum): StateEnum {
         val edge = currentState.getStepForEvent(eventEnum)
         if (edge != null) {
             currentState = getStateByName(edge.finalState)
+            return currentState.stateName
         }
-        return currentState.stateName
+        return StateEnum.NoState
     }
 
     fun getStateByName(name: StateEnum): State {
@@ -51,7 +54,7 @@ fun createStateMachine(): StateMachine {
     val stateMachine = buildStateMachine(initialStateName = StateEnum.StopState) {
         addState(name = StateEnum.AlertState) {
 
-            addStep(name = "Alert to Error", event = EventEnum.ERROR, finalState = StateEnum.ErrorState)
+            addStep(name = "Alert to Error", event = EventEnum.ERROR_AND_CLOSE, finalState = StateEnum.ErrorState)
 
             addStep(name = "Alter to Start", event = EventEnum.CLOSE, finalState = StateEnum.StartState)
         }
