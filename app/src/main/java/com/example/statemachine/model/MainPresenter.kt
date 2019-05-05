@@ -41,11 +41,11 @@ class MainPresenter {
         // Events consumption :
         compositeDisposable.add(
             eventBus.getEvents()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { event -> sendStartTimerEvent(event) }
                 .flatMap { event -> retrieveNextState(event) }
                 .doAfterNext { state -> view.render(state) }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     { state -> System.out.println(state) },
                     { t ->
@@ -58,7 +58,7 @@ class MainPresenter {
     /**
      * If event is Event.START
      * Then pass EventEnum.START_AND_TIMER_ENDS to eventBus
-     * after 3 seconds delay
+     * after 3 seconds delay.
      */
     fun sendStartTimerEvent(event: EventEnum) {
         if (event == EventEnum.START) {
