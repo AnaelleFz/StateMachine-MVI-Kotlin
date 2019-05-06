@@ -16,7 +16,10 @@ class AlertService : Service() {
     private lateinit var alertConsumer: (EventEnum) -> Unit?
 
     private val alerts = listOf(
-        Alert(EventEnum.ALERT, "alert 1", 30)
+        Alert(EventEnum.ALERT, "alert 1", 11),
+        Alert(EventEnum.ALERT, "alert 2", 110),
+        Alert(EventEnum.ALERT, "alert 3", 95),
+        Alert(EventEnum.ALERT, "alert 4", 45)
     )
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -43,6 +46,7 @@ class AlertService : Service() {
                     .delay(alert.delayInSecond, TimeUnit.SECONDS)
             }
             .doOnSuccess { alert -> alertConsumer(alert.event) }
+            .repeat()
             .subscribe()
     }
 
