@@ -7,6 +7,7 @@ import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.statemachine.R
 import com.example.statemachine.model.EventEnum
@@ -49,7 +50,6 @@ class MainActivity : AppCompatActivity() {
         // init/bind presenter
         presenter.bind(this)
 
-        // todo retrieve init event in an other way
         renderStopState()
     }
 
@@ -70,60 +70,59 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun renderStopState() {
+
         text_state.setText(R.string.stop_state)
-        btn_alert.visibility = View.INVISIBLE
         btn_stop.visibility = View.INVISIBLE
         btn_start.visibility = View.VISIBLE
-        btn_error.visibility = View.VISIBLE
-        btn_close.visibility = View.INVISIBLE
+        btn_reset.visibility = View.GONE
+        btn_close.visibility = View.GONE
     }
 
     private fun renderStartState() {
         text_state.setText(R.string.start_state)
-        btn_alert.visibility = View.VISIBLE
         btn_stop.visibility = View.VISIBLE
         btn_start.visibility = View.INVISIBLE
-        btn_error.visibility = View.VISIBLE
-        btn_close.visibility = View.INVISIBLE
+        btn_reset.visibility = View.GONE
+        btn_close.visibility = View.GONE
     }
 
     private fun renderInitState() {
         text_state.setText(R.string.init_state)
-        btn_alert.visibility = View.INVISIBLE
         btn_stop.visibility = View.INVISIBLE
         btn_start.visibility = View.INVISIBLE
-        btn_error.visibility = View.VISIBLE
-        btn_close.visibility = View.INVISIBLE
+        btn_reset.visibility = View.GONE
+        btn_close.visibility = View.GONE
     }
 
     private fun renderErrorState() {
         text_state.setText(R.string.error_state)
-        btn_alert.visibility = View.INVISIBLE
-        btn_stop.visibility = View.VISIBLE
-        btn_start.visibility = View.INVISIBLE
-        btn_error.visibility = View.INVISIBLE
-        btn_close.visibility = View.INVISIBLE
+        btn_stop.visibility = View.GONE
+        btn_start.visibility = View.GONE
+        btn_reset.visibility = View.VISIBLE
+        btn_close.visibility = View.GONE
     }
 
     private fun renderAlertState() {
+        btn_stop.visibility = View.GONE
+        btn_start.visibility = View.GONE
+        btn_reset.visibility = View.GONE
+        btn_close.visibility = View.VISIBLE
+        // build alert dialog
         text_state.setText(R.string.alert_state)
-        text_state.setText(R.string.error_state)
-        btn_alert.visibility = View.INVISIBLE
-        btn_stop.visibility = View.INVISIBLE
-        btn_start.visibility = View.INVISIBLE
-        btn_error.visibility = View.INVISIBLE
-        btn_close.visibility = View.INVISIBLE
+        val builder = AlertDialog.Builder(this@MainActivity)
+        builder.setTitle("Alert received")
+        builder.setMessage("Close alert dialog ?")
+        builder.setPositiveButton("OK") { dialog, which ->
+        }
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
     }
 
     fun stopEventIntent() = btn_stop.clicks()
 
     fun startEventIntent() = btn_start.clicks()
 
-    fun errorEventIntent() = btn_error.clicks()
-
-    fun alertEventItent() = btn_alert.clicks()
+    fun resetEventIntent() = btn_reset.clicks()
 
     fun closeEventItent() = btn_close.clicks()
-
-
 }

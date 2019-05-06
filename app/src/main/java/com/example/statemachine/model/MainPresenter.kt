@@ -3,6 +3,7 @@ package com.example.statemachine.model
 import android.os.Handler
 import android.util.Log
 import com.example.statemachine.model.statemachine.StateMachine
+import com.example.statemachine.model.statemachine.createStateMachine
 import com.example.statemachine.view.MainActivity
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -20,6 +21,8 @@ class MainPresenter {
     private lateinit var stateMachine: StateMachine
     private val eventBus = EventBus()
 
+    val eventsBetweenAlerts: MutableList<EventEnum> = mutableListOf()
+
     /**
      * When mainPresenter is binding with view :
      *  - Initialize State Machine
@@ -27,7 +30,7 @@ class MainPresenter {
      */
     fun bind(view: MainActivity) {
         this.view = view
-        stateMachine = initStateMachine()
+        stateMachine = createStateMachine()
 
         // Events reception :
         compositeDisposable.add(
@@ -43,9 +46,11 @@ class MainPresenter {
             eventBus.getEvents()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext { event -> saveEventsBetweenAlerts(event) }
                 .doOnNext { event -> sendStartTimerEvent(event) }
                 .flatMap { event -> sendErrorAndCloseEvent(event) }
                 .flatMap { event -> retrieveNextState(event) }
+                .filter { state -> state != StateEnum.NoState }
                 .doAfterNext { state -> view.render(state) }
                 .subscribe(
                     { state -> System.out.println(state) },
@@ -70,12 +75,21 @@ class MainPresenter {
         }
     }
 
+    fun saveEventsBetweenAlerts(event: EventEnum) {
+        if (event == EventEnum.ALERT && eventsBetweenAlerts.contains(EventEnum.CLOSE)) {
+            eventsBetweenAlerts.clear()
+            eventsBetweenAlerts.add(event)
+        } else {
+            eventsBetweenAlerts.add(event)
+        }
+    }
+
     /**
-     * If event is EventEnum.CLOSE and the last event set is EventEnum.Error
+     * If event is EventEnum.CLOSE and eventsBetweenAlerts contains EventEnum.ERROR
      * Then transform EventEnum.CLOSE in EventEnum.ERROR_AND_CLOSE
      */
     fun sendErrorAndCloseEvent(event: EventEnum): Observable<EventEnum> {
-        if (event == EventEnum.CLOSE && eventBus.lastEvent == EventEnum.ERROR) {
+        if (event == EventEnum.CLOSE && eventsBetweenAlerts.contains(EventEnum.ERROR)) {
             return Observable.just(EventEnum.ERROR_AND_CLOSE)
         }
         return Observable.just(event)
@@ -100,73 +114,16 @@ class MainPresenter {
      */
     private fun collectAllUiEvents(): Observable<EventEnum> {
         return (view.stopEventIntent().map { EventEnum.STOP })
-            .mergeWith(view.alertEventItent().map { EventEnum.ALERT })
             .mergeWith(view.startEventIntent().map { EventEnum.START })
             .mergeWith(view.startEventIntent().map { EventEnum.START })
-            .mergeWith(view.errorEventIntent().map { EventEnum.ERROR })
+            .mergeWith(view.resetEventIntent().map { EventEnum.RESET })
             .mergeWith(view.closeEventItent().map { EventEnum.CLOSE })
+
     }
 
     private fun retrieveNextState(event: EventEnum): Observable<StateEnum> {
         return Observable.fromCallable {
             stateMachine.onEvent(event)
         }
-    }
-
-    // todo move this in an other place
-    private fun initStateMachine(): StateMachine {
-        val stateMachine = buildStateMachine(initialStateName = StateEnum.StopState) {
-            addState(name = StateEnum.AlertState) {
-
-                addStep(name = "Alert to Error", event = EventEnum.ERROR, finalState = StateEnum.ErrorState)
-
-                addStep(name = "Alter to Start", event = EventEnum.CLOSE, finalState = StateEnum.StartState)
-            }
-
-            addState(name = StateEnum.ErrorState) {
-
-                addStep(name = "Error to Stop", event = EventEnum.STOP, finalState = StateEnum.StopState)
-            }
-
-            addState(name = StateEnum.InitState) {
-
-                addStep(
-                    name = "Init to Start",
-                    event = EventEnum.START_AND_TIMER_ENDS,
-                    finalState = StateEnum.StartState
-                )
-
-                addStep(name = "Init to Error", event = EventEnum.ERROR, finalState = StateEnum.ErrorState)
-
-            }
-
-            addState(name = StateEnum.StartState) {
-
-                addStep(name = "Start to Alert", event = EventEnum.ALERT, finalState = StateEnum.AlertState)
-
-                addStep(name = "Start to Error", event = EventEnum.ERROR, finalState = StateEnum.ErrorState)
-
-                addStep(name = "Start to Stop", event = EventEnum.STOP, finalState = StateEnum.StopState)
-            }
-
-            addState(name = StateEnum.StopState) {
-
-                addStep(name = "Stop to Init", event = EventEnum.START, finalState = StateEnum.InitState)
-
-                addStep(name = "Stop to Error", event = EventEnum.ERROR, finalState = StateEnum.ErrorState)
-            }
-        }
-
-        stateMachine.initStateMachine()
-
-        return stateMachine
-    }
-
-    fun buildStateMachine(initialStateName: StateEnum, init: StateMachine.() -> Unit): StateMachine {
-        val stateMachine = StateMachine(initialStateName)
-
-        stateMachine.init()
-
-        return stateMachine
     }
 }
