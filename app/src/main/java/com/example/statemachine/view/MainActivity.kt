@@ -9,6 +9,7 @@ import android.os.IBinder
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.motion.widget.MotionLayout
 import com.example.statemachine.R
 import com.example.statemachine.model.EventEnum
 import com.example.statemachine.model.MainPresenter
@@ -71,7 +72,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun renderStopState() {
         text_state.setText(R.string.stop_state)
-        btn_stop.visibility = View.INVISIBLE
+        btn_stop.visibility = View.GONE
         btn_start.visibility = View.VISIBLE
         btn_reset.visibility = View.GONE
         btn_close.visibility = View.GONE
@@ -79,9 +80,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun renderStartState() {
         motionLayout.transitionToStart()
+        motionLayout.setTransitionListener(StateTransition())
+        if (motionLayout.currentState == motionLayout.startState) {
+            btn_stop.visibility = View.VISIBLE
+        }
         text_state.setText(R.string.start_state)
-        btn_stop.visibility = View.VISIBLE
-        btn_start.visibility = View.INVISIBLE
+        btn_start.visibility = View.GONE
         btn_reset.visibility = View.GONE
         btn_close.visibility = View.GONE
     }
@@ -89,14 +93,16 @@ class MainActivity : AppCompatActivity() {
     private fun renderInitState() {
         motionLayout.transitionToEnd()
         text_state.setText(R.string.init_state)
-        btn_stop.visibility = View.INVISIBLE
-        btn_start.visibility = View.INVISIBLE
+        btn_stop.visibility = View.GONE
+        btn_start.visibility = View.GONE
         btn_reset.visibility = View.GONE
         btn_close.visibility = View.GONE
     }
 
     private fun renderErrorState() {
         text_state.setText(R.string.error_state)
+        motionLayout.transitionToStart()
+
         btn_stop.visibility = View.GONE
         btn_start.visibility = View.GONE
         btn_reset.visibility = View.VISIBLE
@@ -127,5 +133,24 @@ class MainActivity : AppCompatActivity() {
 
     fun closeEventItent() = btn_close.clicks()
 
+    inner class StateTransition : MotionLayout.TransitionListener {
+        override fun onTransitionTrigger(p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float) {
 
+        }
+
+        override fun onTransitionStarted(p0: MotionLayout?, p1: Int, p2: Int) {
+            // do nothing
+        }
+
+        override fun onTransitionChange(p0: MotionLayout?, p1: Int, p2: Int, p3: Float) {
+            if (p3.compareTo(0.75) < 0) {
+                btn_stop.visibility = View.VISIBLE
+            }
+        }
+
+        override fun onTransitionCompleted(p0: MotionLayout?, p1: Int) {
+            motionLayout.setTransitionListener(null)
+        }
+
+    }
 }
