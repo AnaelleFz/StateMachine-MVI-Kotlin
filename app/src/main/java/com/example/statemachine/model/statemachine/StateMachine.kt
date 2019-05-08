@@ -12,6 +12,13 @@ class StateMachine(private val initialStateName: StateEnum) {
         currentState = getStateByName(initialStateName)
     }
 
+    /**
+     * Useed for test
+     */
+    fun setState(stateEnum: StateEnum) {
+        currentState = getStateByName(stateEnum)
+    }
+
     fun addState(name: StateEnum, init: State.() -> Unit) {
         val state = State(name)
         state.init()
