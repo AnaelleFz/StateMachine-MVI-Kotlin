@@ -70,7 +70,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun renderStopState() {
-
         text_state.setText(R.string.stop_state)
         btn_stop.visibility = View.INVISIBLE
         btn_start.visibility = View.VISIBLE
@@ -79,6 +78,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun renderStartState() {
+        motionLayout.transitionToStart()
         text_state.setText(R.string.start_state)
         btn_stop.visibility = View.VISIBLE
         btn_start.visibility = View.INVISIBLE
@@ -87,6 +87,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun renderInitState() {
+        motionLayout.transitionToEnd()
         text_state.setText(R.string.init_state)
         btn_stop.visibility = View.INVISIBLE
         btn_start.visibility = View.INVISIBLE
@@ -125,4 +126,6 @@ class MainActivity : AppCompatActivity() {
     fun resetEventIntent() = btn_reset.clicks()
 
     fun closeEventItent() = btn_close.clicks()
+
+
 }

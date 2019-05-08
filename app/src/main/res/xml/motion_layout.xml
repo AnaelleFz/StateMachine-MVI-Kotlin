@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+>
+    <Transition
+            app:constraintSetStart="@id/start"
+            app:constraintSetEnd="@id/end"
+            app:duration="1000">
+        <KeyFrameSet>
+            <KeyTrigger
+                    app:framePosition="10"
+                    app:onNegativeCross="hide"
+                    app:motionTarget="@id/btn_stop"
+            />
+            <KeyTrigger
+                    app:framePosition="70"
+                    app:onPositiveCross="show"
+                    app:motionTarget="@id/btn_stop"
+            />
+        </KeyFrameSet>
+    </Transition>
+    <ConstraintSet android:id="@+id/start">
+
+        <Constraint android:id="@id/card_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="16dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+        </Constraint>
+    </ConstraintSet>
+    <ConstraintSet android:id="@+id/end">
+
+        <Constraint
+                android:id="@id/card_view"
+                android:layout_width="match_parent"
+                android:layout_height="130dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+        </Constraint>
+
+        <Constraint
+                android:id="@id/btn_stop"
+                android:visibility="invisible"
+        >
+
+        </Constraint>
+
+    </ConstraintSet>
+</MotionScene>
