@@ -7,7 +7,6 @@ import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import android.view.View
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.motion.widget.MotionLayout
 import com.example.statemachine.R
@@ -51,6 +50,8 @@ class MainActivity : AppCompatActivity() {
         // init/bind presenter
         presenter.bind(this)
 
+        motionLayout.setTransitionListener(animTransitionListener())
+
         renderStopState()
     }
 
@@ -71,6 +72,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun renderStopState() {
+        motionLayout.transitionToEnd()
+        text_state.setBackgroundColor(resources.getColor(R.color.colorStop))
         text_state.setText(R.string.stop_state)
         btn_stop.visibility = View.GONE
         btn_start.visibility = View.VISIBLE
@@ -79,19 +82,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun renderStartState() {
-        motionLayout.transitionToStart()
-        motionLayout.setTransitionListener(StateTransition())
-        if (motionLayout.currentState == motionLayout.startState) {
-            btn_stop.visibility = View.VISIBLE
-        }
+        motionLayout.transitionToEnd()
         text_state.setText(R.string.start_state)
+        text_state.setBackgroundColor(resources.getColor(R.color.colorStart))
         btn_start.visibility = View.GONE
         btn_reset.visibility = View.GONE
         btn_close.visibility = View.GONE
+        btn_stop.visibility = View.VISIBLE
     }
 
     private fun renderInitState() {
         motionLayout.transitionToEnd()
+        text_state.setBackgroundColor(resources.getColor(R.color.colorInit))
         text_state.setText(R.string.init_state)
         btn_stop.visibility = View.GONE
         btn_start.visibility = View.GONE
@@ -100,9 +102,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun renderErrorState() {
+        motionLayout.transitionToEnd()
         text_state.setText(R.string.error_state)
-        motionLayout.transitionToStart()
-
+        text_state.setBackgroundColor(resources.getColor(R.color.colorError))
         btn_stop.visibility = View.GONE
         btn_start.visibility = View.GONE
         btn_reset.visibility = View.VISIBLE
@@ -110,19 +112,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun renderAlertState() {
+        motionLayout.transitionToEnd()
+        text_state.setText(R.string.alert_state)
         btn_stop.visibility = View.GONE
         btn_start.visibility = View.GONE
         btn_reset.visibility = View.GONE
         btn_close.visibility = View.VISIBLE
-        // build alert dialog
-        text_state.setText(R.string.alert_state)
-        val builder = AlertDialog.Builder(this@MainActivity)
-        builder.setTitle("Alert received")
-        builder.setMessage("Close alert dialog ?")
-        builder.setPositiveButton("OK") { dialog, which ->
-        }
-        val dialog: AlertDialog = builder.create()
-        dialog.show()
+        text_state.setBackgroundColor(resources.getColor(R.color.colorAlert))
     }
 
     fun stopEventIntent() = btn_stop.clicks()
@@ -133,9 +129,9 @@ class MainActivity : AppCompatActivity() {
 
     fun closeEventItent() = btn_close.clicks()
 
-    inner class StateTransition : MotionLayout.TransitionListener {
+    inner class animTransitionListener : MotionLayout.TransitionListener {
         override fun onTransitionTrigger(p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float) {
-
+            // do nothing
         }
 
         override fun onTransitionStarted(p0: MotionLayout?, p1: Int, p2: Int) {
@@ -143,13 +139,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onTransitionChange(p0: MotionLayout?, p1: Int, p2: Int, p3: Float) {
-            if (p3.compareTo(0.75) < 0) {
-                btn_stop.visibility = View.VISIBLE
-            }
+            // do nothing
         }
 
         override fun onTransitionCompleted(p0: MotionLayout?, p1: Int) {
-            motionLayout.setTransitionListener(null)
+            motionLayout.transitionToStart()
         }
 
     }
