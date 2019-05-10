@@ -13,7 +13,7 @@ class StateMachine(private val initialStateName: StateEnum) {
     }
 
     /**
-     * Useed for test
+     * Used for test
      */
     fun setState(stateEnum: StateEnum) {
         currentState = getStateByName(stateEnum)
@@ -39,7 +39,7 @@ class StateMachine(private val initialStateName: StateEnum) {
         return StateEnum.NoState
     }
 
-    fun getStateByName(name: StateEnum): State {
+    private fun getStateByName(name: StateEnum): State {
         val result = stateList.firstOrNull { it.stateName == name }
             ?: throw NoSuchElementException(name.toString())
 

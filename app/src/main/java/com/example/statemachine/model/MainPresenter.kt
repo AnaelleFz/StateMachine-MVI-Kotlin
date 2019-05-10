@@ -44,16 +44,15 @@ class MainPresenter {
         // Events consumption :
         compositeDisposable.add(
             eventBus.getEvents()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { event -> saveEventsBetweenAlerts(event) }
                 .doOnNext { event -> sendStartTimerEvent(event) }
                 .flatMap { event -> sendErrorAndCloseEvent(event) }
                 .flatMap { event -> retrieveNextState(event) }
                 .filter { state -> state != StateEnum.NoState }
-                .doAfterNext { state -> view.render(state) }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                    { state -> System.out.println(state) },
+                    { state -> view.render(state) },
                     { t ->
                         Log.e(TAG, errorRetrieveNextState, t)
                     }
@@ -62,11 +61,21 @@ class MainPresenter {
     }
 
     /**
+     * When mainPresenter is unbind, do some actions :
+     * - Dispose compositeDisposable
+     */
+    fun unbind() {
+        if (!compositeDisposable.isDisposed) {
+            compositeDisposable.dispose()
+        }
+    }
+
+    /**
      * If event is EventEnum.START
      * Then pass EventEnum.START_AND_TIMER_ENDS to eventBus
      * after 3 seconds delay.
      */
-    fun sendStartTimerEvent(event: EventEnum) {
+    private fun sendStartTimerEvent(event: EventEnum) {
         if (event == EventEnum.START) {
             Handler().postDelayed({
                 eventBus.passEvent(EventEnum.START_AND_TIMER_ENDS)
@@ -75,7 +84,7 @@ class MainPresenter {
         }
     }
 
-    fun saveEventsBetweenAlerts(event: EventEnum) {
+    private fun saveEventsBetweenAlerts(event: EventEnum) {
         if (event == EventEnum.ALERT && eventsBetweenAlerts.contains(EventEnum.CLOSE)) {
             eventsBetweenAlerts.clear()
             eventsBetweenAlerts.add(event)
@@ -93,12 +102,6 @@ class MainPresenter {
             return Observable.just(EventEnum.ERROR_AND_CLOSE)
         }
         return Observable.just(event)
-    }
-
-    fun unbind() {
-        if (!compositeDisposable.isDisposed) {
-            compositeDisposable.dispose()
-        }
     }
 
     /**

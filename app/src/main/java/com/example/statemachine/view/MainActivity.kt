@@ -16,6 +16,7 @@ import com.example.statemachine.model.MainPresenter
 import com.example.statemachine.model.StateEnum
 import com.example.statemachine.service.AlertService
 import com.jakewharton.rxbinding3.view.clicks
+import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -23,16 +24,18 @@ class MainActivity : AppCompatActivity() {
 
     private val presenter = MainPresenter()
 
-    private lateinit var alertService: AlertService
-
     private lateinit var intentAlertService: Intent
 
-    val alertServiceObserver = PublishSubject.create<EventEnum>()
+
+    /**
+     * Pass event from alertService
+     */
+    val alertServiceObserver: PublishSubject<EventEnum> = PublishSubject.create<EventEnum>()
 
     private val alertServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
             val binder = service as AlertService.AlertServiceBinder
-            alertService = binder.getService()
+            val alertService = binder.getService()
             alertService.setAlertConsumer { eventEnum -> alertServiceObserver.onNext(eventEnum) }
         }
 
@@ -60,6 +63,9 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
+    /**
+     * Accepts a state to render to the screen
+     */
     fun render(stateEnum: StateEnum) {
         when (stateEnum) {
             StateEnum.StopState -> renderStopState()
@@ -67,6 +73,7 @@ class MainActivity : AppCompatActivity() {
             StateEnum.StartState -> renderStartState()
             StateEnum.ErrorState -> renderErrorState()
             StateEnum.AlertState -> renderAlertState()
+            else -> renderStopState()
         }
     }
 
@@ -125,13 +132,17 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    fun stopEventIntent() = btn_stop.clicks()
 
-    fun startEventIntent() = btn_start.clicks()
+    fun stopEventIntent(): Observable<Unit> = btn_stop.clicks()
 
-    fun resetEventIntent() = btn_reset.clicks()
 
-    fun closeEventItent() = btn_close.clicks()
+    fun startEventIntent(): Observable<Unit> = btn_start.clicks()
+
+
+    fun resetEventIntent(): Observable<Unit> = btn_reset.clicks()
+
+
+    fun closeEventItent(): Observable<Unit> = btn_close.clicks()
 
     inner class StateTransition : MotionLayout.TransitionListener {
         override fun onTransitionTrigger(p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float) {
