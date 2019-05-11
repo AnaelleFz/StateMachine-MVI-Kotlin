@@ -19,12 +19,6 @@ allprojects {
     repositories {
         google()
         jcenter()
-        
-    }
-
-    project.ext{
-        rxAndroidVersion = "2.1.0"
-        rxBindingVersion = "3.0.0-alpha2"
     }
 }
 
