@@ -16,9 +16,11 @@ class AlertService : Service() {
     private lateinit var alertConsumer: (EventEnum) -> Unit?
 
     private val alerts = listOf(
-        Alert(EventEnum.ALERT, "alert 1", 25),
-        Alert(EventEnum.ALERT, "alert 2", 45),
-        Alert(EventEnum.ALERT, "alert 3", 65)
+        Alert(EventEnum.ALERT, "alert 1", 12),
+        Alert(EventEnum.ALERT, "alert 1", 10),
+        Alert(EventEnum.ALERT, "alert 1", 11),
+        Alert(EventEnum.ALERT, "alert 2", 13),
+        Alert(EventEnum.ALERT, "alert 3", 14)
     )
 
     override fun onBind(intent: Intent?): IBinder? {

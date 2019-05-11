@@ -12,7 +12,8 @@ import androidx.constraintlayout.motion.widget.MotionLayout
 import com.example.statemachine.R
 import com.example.statemachine.model.EventEnum
 import com.example.statemachine.model.MainPresenter
-import com.example.statemachine.model.StateEnum
+import com.example.statemachine.model.statemachine.State
+import com.example.statemachine.model.statemachine.state.*
 import com.example.statemachine.service.AlertService
 import com.jakewharton.rxbinding3.view.clicks
 import io.reactivex.Observable
@@ -54,8 +55,6 @@ class MainActivity : AppCompatActivity() {
         presenter.bind(this)
 
         motionLayout.setTransitionListener(animTransitionListener())
-
-        renderStopState()
     }
 
     override fun onDestroy() {
@@ -67,13 +66,13 @@ class MainActivity : AppCompatActivity() {
     /**
      * Accepts a state to render to the screen
      */
-    fun render(stateEnum: StateEnum) {
-        when (stateEnum) {
-            StateEnum.StopState -> renderStopState()
-            StateEnum.InitState -> renderInitState()
-            StateEnum.StartState -> renderStartState()
-            StateEnum.ErrorState -> renderErrorState()
-            StateEnum.AlertState -> renderAlertState()
+    fun render(state: State) {
+        when (state) {
+            is StopState -> renderStopState()
+            is InitState -> renderInitState()
+            is StartState -> renderStartState()
+            is ErrorState -> renderErrorState()
+            is AlertState -> renderAlertState()
             else -> renderStopState()
         }
     }

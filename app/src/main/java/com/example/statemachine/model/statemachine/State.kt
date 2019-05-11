@@ -1,18 +1,16 @@
 package com.example.statemachine.model.statemachine
 
 import com.example.statemachine.model.EventEnum
-import com.example.statemachine.model.StateEnum
+import io.reactivex.Observable
+import io.reactivex.subjects.PublishSubject
 
-class State(val stateName: StateEnum) {
+interface State {
 
-    private val stepList = mutableListOf<Step>()
+    val nextStatePublishSubject: PublishSubject<State>
 
-    fun addStep(name: String, event: EventEnum, finalState: StateEnum) {
-        val step = Step(name, event, finalState)
-        stepList.add(step)
-    }
+    fun onEventReceived(event: EventEnum)
 
-    fun getStepForEvent(eventEnum: EventEnum): Step? {
-        return stepList.firstOrNull { it.event == eventEnum }
+    fun observeNextState(): Observable<State> {
+        return nextStatePublishSubject
     }
 }
