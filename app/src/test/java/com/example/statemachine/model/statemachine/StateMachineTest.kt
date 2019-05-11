@@ -66,7 +66,6 @@ class StateMachineTest {
         stateMachine.onEvent(Event.CLOSE)
         stateMachine.onEvent(Event.ALERT)
         stateMachine.onEvent(Event.START_AND_TIMER_ENDS)
-        stateMachine.onEvent(Event.ERROR_AND_CLOSE)
         Assert.assertTrue(stateMachine.currentState is StopState)
     }
 
@@ -97,7 +96,6 @@ class StateMachineTest {
         stateMachine.onEvent(Event.CLOSE)
         stateMachine.onEvent(Event.ALERT)
         stateMachine.onEvent(Event.START)
-        stateMachine.onEvent(Event.ERROR_AND_CLOSE)
         Assert.assertTrue(stateMachine.currentState is InitState)
     }
 
@@ -136,7 +134,6 @@ class StateMachineTest {
         stateMachine.onEvent(Event.START)
         stateMachine.onEvent(Event.START_AND_TIMER_ENDS)
         stateMachine.onEvent(Event.CLOSE)
-        stateMachine.onEvent(Event.ERROR_AND_CLOSE)
         Assert.assertTrue(stateMachine.currentState is StartState)
     }
 
@@ -158,7 +155,6 @@ class StateMachineTest {
         stateMachine.onEvent(Event.START_AND_TIMER_ENDS)
         stateMachine.onEvent(Event.ALERT)
         stateMachine.onEvent(Event.CLOSE)
-        stateMachine.onEvent(Event.ERROR_AND_CLOSE)
         stateMachine.onEvent(Event.ERROR)
         Assert.assertTrue(stateMachine.currentState is ErrorState)
     }
