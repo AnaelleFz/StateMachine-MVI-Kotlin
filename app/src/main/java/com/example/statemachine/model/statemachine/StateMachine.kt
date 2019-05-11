@@ -22,9 +22,8 @@ class StateMachine {
     fun setState(state: State) {
         currentState = state
         currentStateBeSubject.onNext(currentState)
-        currentState.observeNextState().subscribe { nextState ->
-            setState(nextState)
-        }
+        currentState.observeNextState()
+            .subscribe { nextState -> setState(nextState) }
     }
 
     /**

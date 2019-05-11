@@ -11,8 +11,8 @@ class StopState : State {
 
     override fun onEventReceived(event: Event) {
         when (event) {
-            Event.START -> nextStatePublishSubject.onNext(InitState())
-            Event.ERROR -> nextStatePublishSubject.onNext(ErrorState())
+            is Event.Start -> nextStatePublishSubject.onNext(InitState())
+            is Event.Error -> nextStatePublishSubject.onNext(ErrorState())
             else -> Log.w("Stop State", "Unexpected event")
         }
     }
@@ -25,8 +25,8 @@ class InitState : State {
 
     override fun onEventReceived(event: Event) {
         when (event) {
-            Event.START_AND_TIMER_ENDS -> nextStatePublishSubject.onNext(StartState())
-            Event.ERROR -> nextStatePublishSubject.onNext(ErrorState())
+            is Event.StartAndTimerEnds -> nextStatePublishSubject.onNext(StartState())
+            is Event.Error -> nextStatePublishSubject.onNext(ErrorState())
             else -> Log.w("Init State", "Unexpected event")
         }
     }
@@ -39,9 +39,9 @@ class StartState : State {
 
     override fun onEventReceived(event: Event) {
         when (event) {
-            Event.STOP -> nextStatePublishSubject.onNext(StopState())
-            Event.ALERT -> nextStatePublishSubject.onNext(AlertState())
-            Event.ERROR -> nextStatePublishSubject.onNext(ErrorState())
+            is Event.Stop -> nextStatePublishSubject.onNext(StopState())
+            is Event.Alert -> nextStatePublishSubject.onNext(AlertState())
+            is Event.Error -> nextStatePublishSubject.onNext(ErrorState())
             else -> Log.w("Start State", "Unexpected event")
         }
     }
@@ -54,7 +54,7 @@ class ErrorState : State {
 
     override fun onEventReceived(event: Event) {
         when (event) {
-            Event.RESET -> nextStatePublishSubject.onNext(StopState())
+            is Event.Reset -> nextStatePublishSubject.onNext(StopState())
             else -> Log.w("Error State", "Unexpected event")
         }
     }

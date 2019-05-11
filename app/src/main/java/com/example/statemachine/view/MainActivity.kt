@@ -137,7 +137,7 @@ class MainActivity : AppCompatActivity() {
     fun resetEventIntent(): Observable<Unit> = btn_reset.clicks()
 
 
-    fun closeEventItent(): Observable<Unit> = btn_close.clicks()
+    fun closeEventIntent(): Observable<Unit> = btn_close.clicks()
 
     inner class animTransitionListener : MotionLayout.TransitionListener {
         override fun onTransitionTrigger(p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float) {

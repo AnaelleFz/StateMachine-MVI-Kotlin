@@ -68,9 +68,9 @@ class MainPresenter {
      * after 3 seconds delay.
      */
     private fun sendStartTimerEvent(event: Event) {
-        if (event == Event.START) {
+        if (event is Event.Start) {
             Handler().postDelayed({
-                eventBus.passEvent(Event.START_AND_TIMER_ENDS)
+                eventBus.passEvent(Event.StartAndTimerEnds())
             }, 3000)
 
         }
@@ -80,19 +80,12 @@ class MainPresenter {
      * Merge UI events and events from alertService
      */
     private fun collectAllEvents(): Observable<Event> {
-        return collectAllUiEvents()
-            .mergeWith(view.alertServiceObserver)
+        return view.alertServiceObserver
+            .mergeWith(view.startEventIntent().map { Event.Start() })
+            .mergeWith(view.stopEventIntent().map { Event.Stop() })
+            .mergeWith(view.closeEventIntent().map { Event.Close() })
+            .mergeWith(view.resetEventIntent().map { Event.Reset() })
     }
 
-    /**
-     * Collect all events from UI in one observable
-     */
-    private fun collectAllUiEvents(): Observable<Event> {
-        return (view.stopEventIntent().map { Event.STOP })
-            .mergeWith(view.startEventIntent().map { Event.START })
-            .mergeWith(view.startEventIntent().map { Event.START })
-            .mergeWith(view.resetEventIntent().map { Event.RESET })
-            .mergeWith(view.closeEventItent().map { Event.CLOSE })
-
-    }
 }
+

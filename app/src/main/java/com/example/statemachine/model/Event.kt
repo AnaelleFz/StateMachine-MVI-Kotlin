@@ -1,5 +1,11 @@
 package com.example.statemachine.model
 
-enum class Event {
-    STOP, START, ERROR, RESET, ALERT, CLOSE, START_AND_TIMER_ENDS
+sealed class Event {
+    class Stop : Event()
+    class Start : Event()
+    class Error : Event()
+    class Reset : Event()
+    class Alert(val desc: String, val delayInSecond: Long) : Event()
+    class Close : Event()
+    class StartAndTimerEnds : Event()
 }

@@ -15,9 +15,9 @@ class AlertState : State {
 
     override fun onEventReceived(event: Event) {
         when (event) {
-            Event.ERROR -> isError = true
-            Event.ALERT -> alertStack.add(event)
-            Event.CLOSE -> triggerNextState()
+            is Event.Error -> isError = true
+            is Event.Alert -> alertStack.add(event)
+            is Event.Close -> triggerNextState()
             else -> Log.w("Start State", "Unexpected event")
         }
     }
