@@ -1,7 +1,7 @@
 package com.example.statemachine.model.statemachine
 
 import android.annotation.SuppressLint
-import com.example.statemachine.model.EventEnum
+import com.example.statemachine.model.Event
 import com.example.statemachine.model.statemachine.state.StopState
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
@@ -30,8 +30,8 @@ class StateMachine {
     /**
      * Only input of state machine
      */
-    fun onEvent(eventEnum: EventEnum) {
-        currentState.onEventReceived(eventEnum)
+    fun onEvent(event: Event) {
+        currentState.onEventReceived(event)
     }
 
     /**

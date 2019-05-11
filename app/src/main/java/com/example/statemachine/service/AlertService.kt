@@ -4,7 +4,7 @@ import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
-import com.example.statemachine.model.EventEnum
+import com.example.statemachine.model.Event
 import io.reactivex.Observable
 import io.reactivex.Single
 import java.util.concurrent.TimeUnit
@@ -13,14 +13,14 @@ class AlertService : Service() {
 
     private val alertServiceBinder = AlertServiceBinder()
 
-    private lateinit var alertConsumer: (EventEnum) -> Unit?
+    private lateinit var alertConsumer: (Event) -> Unit?
 
     private val alerts = listOf(
-        Alert(EventEnum.ALERT, "alert 1", 12),
-        Alert(EventEnum.ALERT, "alert 1", 10),
-        Alert(EventEnum.ALERT, "alert 1", 11),
-        Alert(EventEnum.ALERT, "alert 2", 13),
-        Alert(EventEnum.ALERT, "alert 3", 14)
+        Alert(Event.ALERT, "alert 1", 12),
+        Alert(Event.ALERT, "alert 1", 10),
+        Alert(Event.ALERT, "alert 1", 11),
+        Alert(Event.ALERT, "alert 2", 13),
+        Alert(Event.ALERT, "alert 3", 14)
     )
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -29,7 +29,7 @@ class AlertService : Service() {
         return alertServiceBinder
     }
 
-    fun setAlertConsumer(alertConsumer: (EventEnum) -> Unit) {
+    fun setAlertConsumer(alertConsumer: (Event) -> Unit) {
         this.alertConsumer = alertConsumer
     }
 
@@ -70,8 +70,8 @@ class AlertService : Service() {
             .subscribe()
     }
 
-    private fun getError(): Observable<EventEnum> {
-        return Observable.just(EventEnum.ERROR)
+    private fun getError(): Observable<Event> {
+        return Observable.just(Event.ERROR)
     }
 
     inner class AlertServiceBinder : Binder() {
@@ -81,4 +81,4 @@ class AlertService : Service() {
     }
 }
 
-data class Alert(val event: EventEnum, val desc: String, val delayInSecond: Long)
+data class Alert(val event: Event, val desc: String, val delayInSecond: Long)

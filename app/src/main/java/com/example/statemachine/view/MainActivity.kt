@@ -10,7 +10,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.motion.widget.MotionLayout
 import com.example.statemachine.R
-import com.example.statemachine.model.EventEnum
+import com.example.statemachine.model.Event
 import com.example.statemachine.model.MainPresenter
 import com.example.statemachine.model.statemachine.State
 import com.example.statemachine.model.statemachine.state.*
@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * Pass event from alertService
      */
-    val alertServiceObserver: PublishSubject<EventEnum> = PublishSubject.create<EventEnum>()
+    val alertServiceObserver: PublishSubject<Event> = PublishSubject.create<Event>()
 
     private val alertServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(className: ComponentName, service: IBinder) {

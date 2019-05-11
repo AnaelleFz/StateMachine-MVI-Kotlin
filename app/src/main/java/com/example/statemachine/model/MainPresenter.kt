@@ -63,14 +63,14 @@ class MainPresenter {
     }
 
     /**
-     * If event is EventEnum.START
-     * Then pass EventEnum.START_AND_TIMER_ENDS to eventBus
+     * If event is Event.START
+     * Then pass Event.START_AND_TIMER_ENDS to eventBus
      * after 3 seconds delay.
      */
-    private fun sendStartTimerEvent(event: EventEnum) {
-        if (event == EventEnum.START) {
+    private fun sendStartTimerEvent(event: Event) {
+        if (event == Event.START) {
             Handler().postDelayed({
-                eventBus.passEvent(EventEnum.START_AND_TIMER_ENDS)
+                eventBus.passEvent(Event.START_AND_TIMER_ENDS)
             }, 3000)
 
         }
@@ -79,7 +79,7 @@ class MainPresenter {
     /**
      * Merge UI events and events from alertService
      */
-    private fun collectAllEvents(): Observable<EventEnum> {
+    private fun collectAllEvents(): Observable<Event> {
         return collectAllUiEvents()
             .mergeWith(view.alertServiceObserver)
     }
@@ -87,12 +87,12 @@ class MainPresenter {
     /**
      * Collect all events from UI in one observable
      */
-    private fun collectAllUiEvents(): Observable<EventEnum> {
-        return (view.stopEventIntent().map { EventEnum.STOP })
-            .mergeWith(view.startEventIntent().map { EventEnum.START })
-            .mergeWith(view.startEventIntent().map { EventEnum.START })
-            .mergeWith(view.resetEventIntent().map { EventEnum.RESET })
-            .mergeWith(view.closeEventItent().map { EventEnum.CLOSE })
+    private fun collectAllUiEvents(): Observable<Event> {
+        return (view.stopEventIntent().map { Event.STOP })
+            .mergeWith(view.startEventIntent().map { Event.START })
+            .mergeWith(view.startEventIntent().map { Event.START })
+            .mergeWith(view.resetEventIntent().map { Event.RESET })
+            .mergeWith(view.closeEventItent().map { Event.CLOSE })
 
     }
 }

@@ -1,7 +1,7 @@
 package com.example.statemachine.model.statemachine.state
 
 import android.util.Log
-import com.example.statemachine.model.EventEnum
+import com.example.statemachine.model.Event
 import com.example.statemachine.model.statemachine.State
 import io.reactivex.subjects.PublishSubject
 
@@ -9,15 +9,15 @@ class AlertState : State {
 
     override val nextStatePublishSubject = PublishSubject.create<State>()
 
-    private val alertStack = mutableListOf<EventEnum>()
+    private val alertStack = mutableListOf<Event>()
 
     private var isError = false
 
-    override fun onEventReceived(event: EventEnum) {
+    override fun onEventReceived(event: Event) {
         when (event) {
-            EventEnum.ERROR -> isError = true
-            EventEnum.ALERT -> alertStack.add(event)
-            EventEnum.CLOSE -> triggerNextState()
+            Event.ERROR -> isError = true
+            Event.ALERT -> alertStack.add(event)
+            Event.CLOSE -> triggerNextState()
             else -> Log.w("Start State", "Unexpected event")
         }
     }
