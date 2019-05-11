@@ -14,16 +14,22 @@ class StateMachine {
     private val currentStateBeSubject = BehaviorSubject.create<State>()
 
     init {
-        currentStateBeSubject.onNext(currentState)
+        initStateObservation()
     }
 
     // todo make it private
-    @SuppressLint("CheckResult")
     fun setState(state: State) {
         currentState = state
+        initStateObservation()
+    }
+
+    @SuppressLint("CheckResult")
+    private fun initStateObservation() {
         currentStateBeSubject.onNext(currentState)
         currentState.observeNextState()
-            .subscribe { nextState -> setState(nextState) }
+            .subscribe { nextState ->
+                setState(nextState)
+            }
     }
 
     /**

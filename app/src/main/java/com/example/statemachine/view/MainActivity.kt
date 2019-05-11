@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity() {
             is InitState -> renderInitState()
             is StartState -> renderStartState()
             is ErrorState -> renderErrorState()
-            is AlertState -> renderAlertState()
+            is AlertState -> renderAlertState(state.desc)
             else -> renderStopState()
         }
     }
@@ -85,6 +85,7 @@ class MainActivity : AppCompatActivity() {
         btn_start.visibility = View.VISIBLE
         btn_reset.visibility = View.GONE
         btn_close.visibility = View.GONE
+        text_message.visibility = View.INVISIBLE
     }
 
     private fun renderStartState() {
@@ -95,6 +96,7 @@ class MainActivity : AppCompatActivity() {
         btn_reset.visibility = View.GONE
         btn_close.visibility = View.GONE
         btn_stop.visibility = View.VISIBLE
+        text_message.visibility = View.INVISIBLE
     }
 
     private fun renderInitState() {
@@ -105,6 +107,7 @@ class MainActivity : AppCompatActivity() {
         btn_start.visibility = View.GONE
         btn_reset.visibility = View.GONE
         btn_close.visibility = View.GONE
+        text_message.visibility = View.INVISIBLE
     }
 
     private fun renderErrorState() {
@@ -115,11 +118,14 @@ class MainActivity : AppCompatActivity() {
         btn_start.visibility = View.GONE
         btn_reset.visibility = View.VISIBLE
         btn_close.visibility = View.GONE
+        text_message.visibility = View.INVISIBLE
     }
 
-    private fun renderAlertState() {
+    private fun renderAlertState(message: String) {
         motionLayout.transitionToEnd()
         text_state.setText(R.string.alert_state)
+        text_message.visibility = View.VISIBLE
+        text_message.text = message
         btn_stop.visibility = View.GONE
         btn_start.visibility = View.GONE
         btn_reset.visibility = View.GONE

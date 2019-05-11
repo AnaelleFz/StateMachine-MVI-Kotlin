@@ -11,7 +11,7 @@ class StateMachineTest {
     @Test
     fun `In alert if new alert is received state machine remains in alert after close event`() {
         val stateMachine = StateMachine()
-        stateMachine.setState(AlertState())
+        stateMachine.setState(AlertState("alert 0"))
         stateMachine.onEvent(Event.Alert("alert 1", 0))
         stateMachine.onEvent(Event.Close())
         Assert.assertTrue(stateMachine.currentState is AlertState)
@@ -20,7 +20,7 @@ class StateMachineTest {
     @Test
     fun `In alert when all alter were closed then start state is the new state`() {
         val stateMachine = StateMachine()
-        stateMachine.setState(AlertState())
+        stateMachine.setState(AlertState("alert 0"))
         stateMachine.onEvent(Event.Alert("alert 1", 0))
         stateMachine.onEvent(Event.Close())
         stateMachine.onEvent(Event.Close())
@@ -30,7 +30,7 @@ class StateMachineTest {
     @Test
     fun `In alert if error is received then next state is error state`() {
         val stateMachine = StateMachine()
-        stateMachine.setState(AlertState())
+        stateMachine.setState(AlertState("alert 0"))
         stateMachine.onEvent(Event.Alert("alert 1", 0))
         stateMachine.onEvent(Event.Alert("alert 1", 0))
         stateMachine.onEvent(Event.Error())

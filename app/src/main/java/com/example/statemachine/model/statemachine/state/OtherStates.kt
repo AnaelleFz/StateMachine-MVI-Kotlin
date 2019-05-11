@@ -40,7 +40,7 @@ class StartState : State {
     override fun onEventReceived(event: Event) {
         when (event) {
             is Event.Stop -> nextStatePublishSubject.onNext(StopState())
-            is Event.Alert -> nextStatePublishSubject.onNext(AlertState())
+            is Event.Alert -> nextStatePublishSubject.onNext(AlertState(event.desc))
             is Event.Error -> nextStatePublishSubject.onNext(ErrorState())
             else -> Log.w("Start State", "Unexpected event")
         }

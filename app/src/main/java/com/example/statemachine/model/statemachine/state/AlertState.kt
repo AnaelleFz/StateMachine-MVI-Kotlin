@@ -5,11 +5,11 @@ import com.example.statemachine.model.Event
 import com.example.statemachine.model.statemachine.State
 import io.reactivex.subjects.PublishSubject
 
-class AlertState : State {
+class AlertState(val desc: String) : State {
 
     override val nextStatePublishSubject = PublishSubject.create<State>()
 
-    private val alertStack = mutableListOf<Event>()
+    private val alertStack = mutableListOf<Event.Alert>()
 
     private var isError = false
 
@@ -27,8 +27,10 @@ class AlertState : State {
             isError -> nextStatePublishSubject.onNext(ErrorState())
             alertStack.isEmpty() -> nextStatePublishSubject.onNext(StartState())
             else -> {
+                nextStatePublishSubject.onNext(
+                    AlertState(alertStack[alertStack.size - 1].desc)
+                )
                 alertStack.removeAt(alertStack.size - 1)
-                nextStatePublishSubject.onNext(AlertState())
             }
         }
     }

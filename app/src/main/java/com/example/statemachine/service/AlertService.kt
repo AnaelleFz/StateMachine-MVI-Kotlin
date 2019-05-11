@@ -16,7 +16,10 @@ class AlertService : Service() {
     private lateinit var alertConsumer: (Event) -> Unit?
 
     private val alerts = listOf(
-        Event.Alert("alert 1", 120)
+        Event.Alert("Alert n°33", 12),
+        Event.Alert("Alert n°43", 12),
+        Event.Alert("Alert n°53", 12),
+        Event.Alert("Alert n°63", 12)
     )
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -35,7 +38,7 @@ class AlertService : Service() {
      * Finally pass alert.event to alertConsumer.
      *
      */
-    fun sendAlert() {
+    private fun sendAlert() {
         getRandomNumber()
             .map { i -> alerts[i] }
             .flatMap { alert ->
@@ -59,7 +62,7 @@ class AlertService : Service() {
     private fun sendErrorEveryMinute() {
         getError()
             .delay(
-                600, TimeUnit.SECONDS
+                60, TimeUnit.SECONDS
             )
             .doOnNext { error -> alertConsumer(error) }
             .repeat()
