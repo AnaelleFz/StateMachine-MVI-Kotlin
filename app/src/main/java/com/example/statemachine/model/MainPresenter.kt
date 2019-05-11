@@ -3,7 +3,6 @@ package com.example.statemachine.model
 import android.os.Handler
 import android.util.Log
 import com.example.statemachine.model.statemachine.StateMachine
-import com.example.statemachine.model.statemachine.state.StopState
 import com.example.statemachine.view.MainActivity
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -27,7 +26,6 @@ class MainPresenter {
      */
     fun bind(view: MainActivity) {
         this.view = view
-        stateMachine.setState(StopState())
 
         // Events reception :
         compositeDisposable.add(

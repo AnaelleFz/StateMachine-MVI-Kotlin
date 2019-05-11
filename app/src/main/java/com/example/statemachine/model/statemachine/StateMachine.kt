@@ -2,21 +2,26 @@ package com.example.statemachine.model.statemachine
 
 import android.annotation.SuppressLint
 import com.example.statemachine.model.EventEnum
+import com.example.statemachine.model.statemachine.state.StopState
 import io.reactivex.Observable
-import io.reactivex.subjects.PublishSubject
+import io.reactivex.subjects.BehaviorSubject
 
 class StateMachine {
 
-    //todo make it private
-    lateinit var currentState: State
-
-    private val currentStatePublishSubject = PublishSubject.create<State>()
-
-    @SuppressLint("CheckResult")
     // todo make it private
+    var currentState: State = StopState()
+
+    private val currentStateBeSubject = BehaviorSubject.create<State>()
+
+    init {
+        currentStateBeSubject.onNext(currentState)
+    }
+
+    // todo make it private
+    @SuppressLint("CheckResult")
     fun setState(state: State) {
         currentState = state
-        currentStatePublishSubject.onNext(currentState)
+        currentStateBeSubject.onNext(currentState)
         currentState.observeNextState().subscribe { nextState ->
             setState(nextState)
         }
@@ -33,7 +38,7 @@ class StateMachine {
      * To observe current state outside of state machine
      */
     fun observeCurrentState(): Observable<State> {
-        return currentStatePublishSubject
+        return currentStateBeSubject
     }
 
 }
