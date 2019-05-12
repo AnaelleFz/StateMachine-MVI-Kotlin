@@ -4,8 +4,7 @@ import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
-import com.example.statemachine.model.EventEnum
-import io.reactivex.Observable
+import com.example.statemachine.model.Event
 import io.reactivex.Single
 import java.util.concurrent.TimeUnit
 
@@ -13,12 +12,20 @@ class AlertService : Service() {
 
     private val alertServiceBinder = AlertServiceBinder()
 
-    private lateinit var alertConsumer: (EventEnum) -> Unit?
+    private lateinit var alertConsumer: (Event) -> Unit?
 
     private val alerts = listOf(
-        Alert(EventEnum.ALERT, "alert 1", 25),
-        Alert(EventEnum.ALERT, "alert 2", 45),
-        Alert(EventEnum.ALERT, "alert 3", 65)
+        Event.Alert("Alert n°1", 5),
+        Event.Alert("Alert n°2", 15),
+        Event.Alert("Alert n°3", 25),
+        Event.Alert("Alert n°4", 35)
+    )
+
+    private val errors = listOf(
+        Event.Error("Error n°1"),
+        Event.Error("Error n°2"),
+        Event.Error("Error n°3"),
+        Event.Error("Error n°4")
     )
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -27,7 +34,7 @@ class AlertService : Service() {
         return alertServiceBinder
     }
 
-    fun setAlertConsumer(alertConsumer: (EventEnum) -> Unit) {
+    fun setAlertConsumer(alertConsumer: (Event) -> Unit) {
         this.alertConsumer = alertConsumer
     }
 
@@ -37,21 +44,21 @@ class AlertService : Service() {
      * Finally pass alert.event to alertConsumer.
      *
      */
-    fun sendAlert() {
-        getRandomNumber()
+    private fun sendAlert() {
+        getRandomNumber(alerts.size)
             .map { i -> alerts[i] }
             .flatMap { alert ->
                 Single.just(alert)
                     .delay(alert.delayInSecond, TimeUnit.SECONDS)
             }
-            .doOnSuccess { alert -> alertConsumer(alert.event) }
+            .doOnSuccess { alert -> alertConsumer(alert) }
             .repeat()
             .subscribe()
     }
 
-    private fun getRandomNumber(): Single<Int> {
+    private fun getRandomNumber(maxSize: Int): Single<Int> {
         return Single.fromCallable {
-            (0 until alerts.size).random()
+            (0 until maxSize).random()
         }
     }
 
@@ -59,17 +66,14 @@ class AlertService : Service() {
      * Send event error every minute to alertConsumer
      */
     private fun sendErrorEveryMinute() {
-        getError()
+        getRandomNumber(errors.size)
+            .map { i -> errors[i] }
             .delay(
                 60, TimeUnit.SECONDS
             )
-            .doOnNext { error -> alertConsumer(error) }
+            .doOnSuccess { error -> alertConsumer(error) }
             .repeat()
             .subscribe()
-    }
-
-    private fun getError(): Observable<EventEnum> {
-        return Observable.just(EventEnum.ERROR)
     }
 
     inner class AlertServiceBinder : Binder() {
@@ -78,5 +82,3 @@ class AlertService : Service() {
         }
     }
 }
-
-data class Alert(val event: EventEnum, val desc: String, val delayInSecond: Long)

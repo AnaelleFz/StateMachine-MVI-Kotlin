@@ -33,6 +33,20 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"/>
 
+            <TextView
+                    android:id="@+id/text_message"
+                    android:layout_width="match_parent"
+                    android:gravity="center_horizontal"
+                    android:layout_height="wrap_content"
+                    android:text="Hello World!"
+                    android:layout_marginTop="32dp"
+                    android:textSize="20sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/text_state"
+
+            />
+
             <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_stop"
                     android:text="Stop"
