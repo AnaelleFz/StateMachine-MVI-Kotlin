@@ -5,13 +5,13 @@ import io.reactivex.subjects.PublishSubject
 
 class EventBus {
 
-    val eventPublishSubject = PublishSubject.create<EventEnum>()
+    val eventPublishSubject = PublishSubject.create<Event>()
 
-    fun passEvent(event: EventEnum) {
+    fun passEvent(event: Event) {
         eventPublishSubject.onNext(event)
     }
 
-    fun getEvents(): Observable<EventEnum> {
+    fun getEvents(): Observable<Event> {
         return eventPublishSubject
     }
 }

@@ -10,11 +10,13 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.motion.widget.MotionLayout
 import com.example.statemachine.R
-import com.example.statemachine.model.EventEnum
+import com.example.statemachine.model.Event
 import com.example.statemachine.model.MainPresenter
-import com.example.statemachine.model.StateEnum
+import com.example.statemachine.model.statemachine.State
+import com.example.statemachine.model.statemachine.state.*
 import com.example.statemachine.service.AlertService
 import com.jakewharton.rxbinding3.view.clicks
+import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -22,16 +24,18 @@ class MainActivity : AppCompatActivity() {
 
     private val presenter = MainPresenter()
 
-    private lateinit var alertService: AlertService
-
     private lateinit var intentAlertService: Intent
 
-    val alertServiceObserver = PublishSubject.create<EventEnum>()
+
+    /**
+     * Pass event from alertService
+     */
+    val alertServiceObserver: PublishSubject<Event> = PublishSubject.create<Event>()
 
     private val alertServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
             val binder = service as AlertService.AlertServiceBinder
-            alertService = binder.getService()
+            val alertService = binder.getService()
             alertService.setAlertConsumer { eventEnum -> alertServiceObserver.onNext(eventEnum) }
         }
 
@@ -51,8 +55,6 @@ class MainActivity : AppCompatActivity() {
         presenter.bind(this)
 
         motionLayout.setTransitionListener(animTransitionListener())
-
-        renderStopState()
     }
 
     override fun onDestroy() {
@@ -61,13 +63,17 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    fun render(stateEnum: StateEnum) {
-        when (stateEnum) {
-            StateEnum.StopState -> renderStopState()
-            StateEnum.InitState -> renderInitState()
-            StateEnum.StartState -> renderStartState()
-            StateEnum.ErrorState -> renderErrorState()
-            StateEnum.AlertState -> renderAlertState()
+    /**
+     * Accepts a state to render to the screen
+     */
+    fun render(state: State) {
+        when (state) {
+            is StopState -> renderStopState()
+            is InitState -> renderInitState()
+            is StartState -> renderStartState()
+            is ErrorState -> renderErrorState(state.desc)
+            is AlertState -> renderAlertState(state.desc)
+            else -> renderStopState()
         }
     }
 
@@ -79,6 +85,7 @@ class MainActivity : AppCompatActivity() {
         btn_start.visibility = View.VISIBLE
         btn_reset.visibility = View.GONE
         btn_close.visibility = View.GONE
+        text_message.visibility = View.INVISIBLE
     }
 
     private fun renderStartState() {
@@ -89,6 +96,7 @@ class MainActivity : AppCompatActivity() {
         btn_reset.visibility = View.GONE
         btn_close.visibility = View.GONE
         btn_stop.visibility = View.VISIBLE
+        text_message.visibility = View.INVISIBLE
     }
 
     private fun renderInitState() {
@@ -99,9 +107,10 @@ class MainActivity : AppCompatActivity() {
         btn_start.visibility = View.GONE
         btn_reset.visibility = View.GONE
         btn_close.visibility = View.GONE
+        text_message.visibility = View.INVISIBLE
     }
 
-    private fun renderErrorState() {
+    private fun renderErrorState(message: String) {
         motionLayout.transitionToEnd()
         text_state.setText(R.string.error_state)
         text_state.setBackgroundColor(resources.getColor(R.color.colorError))
@@ -109,11 +118,15 @@ class MainActivity : AppCompatActivity() {
         btn_start.visibility = View.GONE
         btn_reset.visibility = View.VISIBLE
         btn_close.visibility = View.GONE
+        text_message.visibility = View.VISIBLE
+        text_message.text = message
     }
 
-    private fun renderAlertState() {
+    private fun renderAlertState(message: String) {
         motionLayout.transitionToEnd()
         text_state.setText(R.string.alert_state)
+        text_message.visibility = View.VISIBLE
+        text_message.text = message
         btn_stop.visibility = View.GONE
         btn_start.visibility = View.GONE
         btn_reset.visibility = View.GONE
@@ -121,13 +134,17 @@ class MainActivity : AppCompatActivity() {
         text_state.setBackgroundColor(resources.getColor(R.color.colorAlert))
     }
 
-    fun stopEventIntent() = btn_stop.clicks()
 
-    fun startEventIntent() = btn_start.clicks()
+    fun stopEventIntent(): Observable<Unit> = btn_stop.clicks()
 
-    fun resetEventIntent() = btn_reset.clicks()
 
-    fun closeEventItent() = btn_close.clicks()
+    fun startEventIntent(): Observable<Unit> = btn_start.clicks()
+
+
+    fun resetEventIntent(): Observable<Unit> = btn_reset.clicks()
+
+
+    fun closeEventIntent(): Observable<Unit> = btn_close.clicks()
 
     inner class animTransitionListener : MotionLayout.TransitionListener {
         override fun onTransitionTrigger(p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float) {

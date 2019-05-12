@@ -3,7 +3,6 @@ package com.example.statemachine.model
 import android.os.Handler
 import android.util.Log
 import com.example.statemachine.model.statemachine.StateMachine
-import com.example.statemachine.model.statemachine.createStateMachine
 import com.example.statemachine.view.MainActivity
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -14,14 +13,11 @@ class MainPresenter {
 
     private val TAG = "MainPresenter"
     private val errorCollectEvent = "An error occurred trying to collect events"
-    private val errorRetrieveNextState = "An error occurred trying to retrieve next state"
 
     private val compositeDisposable = CompositeDisposable()
     private lateinit var view: MainActivity
-    private lateinit var stateMachine: StateMachine
+    private val stateMachine = StateMachine()
     private val eventBus = EventBus()
-
-    val eventsBetweenAlerts: MutableList<EventEnum> = mutableListOf()
 
     /**
      * When mainPresenter is binding with view :
@@ -30,7 +26,6 @@ class MainPresenter {
      */
     fun bind(view: MainActivity) {
         this.view = view
-        stateMachine = createStateMachine()
 
         // Events reception :
         compositeDisposable.add(
@@ -44,57 +39,23 @@ class MainPresenter {
         // Events consumption :
         compositeDisposable.add(
             eventBus.getEvents()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext { event -> saveEventsBetweenAlerts(event) }
                 .doOnNext { event -> sendStartTimerEvent(event) }
-                .flatMap { event -> sendErrorAndCloseEvent(event) }
-                .flatMap { event -> retrieveNextState(event) }
-                .filter { state -> state != StateEnum.NoState }
-                .doAfterNext { state -> view.render(state) }
-                .subscribe(
-                    { state -> System.out.println(state) },
-                    { t ->
-                        Log.e(TAG, errorRetrieveNextState, t)
-                    }
-                )
+                .doOnNext { event -> stateMachine.onEvent(event) }
+                .subscribeOn(Schedulers.io())
+                .subscribe()
+        )
+
+        compositeDisposable.add(
+            stateMachine.observeCurrentState()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { state -> view.render(state) }
         )
     }
 
     /**
-     * If event is EventEnum.START
-     * Then pass EventEnum.START_AND_TIMER_ENDS to eventBus
-     * after 3 seconds delay.
+     * When mainPresenter is unbind, do some actions :
+     * - Dispose compositeDisposable
      */
-    fun sendStartTimerEvent(event: EventEnum) {
-        if (event == EventEnum.START) {
-            Handler().postDelayed({
-                eventBus.passEvent(EventEnum.START_AND_TIMER_ENDS)
-            }, 3000)
-
-        }
-    }
-
-    fun saveEventsBetweenAlerts(event: EventEnum) {
-        if (event == EventEnum.ALERT && eventsBetweenAlerts.contains(EventEnum.CLOSE)) {
-            eventsBetweenAlerts.clear()
-            eventsBetweenAlerts.add(event)
-        } else {
-            eventsBetweenAlerts.add(event)
-        }
-    }
-
-    /**
-     * If event is EventEnum.CLOSE and eventsBetweenAlerts contains EventEnum.ERROR
-     * Then transform EventEnum.CLOSE in EventEnum.ERROR_AND_CLOSE
-     */
-    fun sendErrorAndCloseEvent(event: EventEnum): Observable<EventEnum> {
-        if (event == EventEnum.CLOSE && eventsBetweenAlerts.contains(EventEnum.ERROR)) {
-            return Observable.just(EventEnum.ERROR_AND_CLOSE)
-        }
-        return Observable.just(event)
-    }
-
     fun unbind() {
         if (!compositeDisposable.isDisposed) {
             compositeDisposable.dispose()
@@ -102,28 +63,29 @@ class MainPresenter {
     }
 
     /**
-     * Merge UI events and events from alertService
+     * If event is Event.START
+     * Then pass Event.START_AND_TIMER_ENDS to eventBus
+     * after 3 seconds delay.
      */
-    private fun collectAllEvents(): Observable<EventEnum> {
-        return collectAllUiEvents()
-            .mergeWith(view.alertServiceObserver)
+    private fun sendStartTimerEvent(event: Event) {
+        if (event is Event.Start) {
+            Handler().postDelayed({
+                eventBus.passEvent(Event.StartAndTimerEnds())
+            }, 3000)
+
+        }
     }
 
     /**
-     * Collect all events from UI in one observable
+     * Merge UI events and events from alertService
      */
-    private fun collectAllUiEvents(): Observable<EventEnum> {
-        return (view.stopEventIntent().map { EventEnum.STOP })
-            .mergeWith(view.startEventIntent().map { EventEnum.START })
-            .mergeWith(view.startEventIntent().map { EventEnum.START })
-            .mergeWith(view.resetEventIntent().map { EventEnum.RESET })
-            .mergeWith(view.closeEventItent().map { EventEnum.CLOSE })
-
+    private fun collectAllEvents(): Observable<Event> {
+        return view.alertServiceObserver
+            .mergeWith(view.startEventIntent().map { Event.Start() })
+            .mergeWith(view.stopEventIntent().map { Event.Stop() })
+            .mergeWith(view.closeEventIntent().map { Event.Close() })
+            .mergeWith(view.resetEventIntent().map { Event.Reset() })
     }
 
-    private fun retrieveNextState(event: EventEnum): Observable<StateEnum> {
-        return Observable.fromCallable {
-            stateMachine.onEvent(event)
-        }
-    }
 }
+
