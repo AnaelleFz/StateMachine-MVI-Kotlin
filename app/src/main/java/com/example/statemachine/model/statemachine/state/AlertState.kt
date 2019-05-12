@@ -11,11 +11,11 @@ class AlertState(val desc: String) : State {
 
     private val alertStack = mutableListOf<Event.Alert>()
 
-    private var isError = false
+    private var errorStack = mutableListOf<Event.Error>()
 
     override fun onEventReceived(event: Event) {
         when (event) {
-            is Event.Error -> isError = true
+            is Event.Error -> errorStack.add(event)
             is Event.Alert -> alertStack.add(event)
             is Event.Close -> triggerNextState()
             else -> Log.w("Start State", "Unexpected event")
@@ -24,7 +24,9 @@ class AlertState(val desc: String) : State {
 
     private fun triggerNextState() {
         when {
-            isError -> nextStatePublishSubject.onNext(ErrorState())
+            !errorStack.isEmpty() -> nextStatePublishSubject.onNext(
+                ErrorState(errorStack[errorStack.size - 1].desc)
+            )
             alertStack.isEmpty() -> nextStatePublishSubject.onNext(StartState())
             else -> {
                 nextStatePublishSubject.onNext(

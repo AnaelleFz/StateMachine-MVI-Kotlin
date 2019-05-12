@@ -12,7 +12,7 @@ class StopState : State {
     override fun onEventReceived(event: Event) {
         when (event) {
             is Event.Start -> nextStatePublishSubject.onNext(InitState())
-            is Event.Error -> nextStatePublishSubject.onNext(ErrorState())
+            is Event.Error -> nextStatePublishSubject.onNext(ErrorState(event.desc))
             else -> Log.w("Stop State", "Unexpected event")
         }
     }
@@ -26,7 +26,7 @@ class InitState : State {
     override fun onEventReceived(event: Event) {
         when (event) {
             is Event.StartAndTimerEnds -> nextStatePublishSubject.onNext(StartState())
-            is Event.Error -> nextStatePublishSubject.onNext(ErrorState())
+            is Event.Error -> nextStatePublishSubject.onNext(ErrorState(event.desc))
             else -> Log.w("Init State", "Unexpected event")
         }
     }
@@ -41,14 +41,14 @@ class StartState : State {
         when (event) {
             is Event.Stop -> nextStatePublishSubject.onNext(StopState())
             is Event.Alert -> nextStatePublishSubject.onNext(AlertState(event.desc))
-            is Event.Error -> nextStatePublishSubject.onNext(ErrorState())
+            is Event.Error -> nextStatePublishSubject.onNext(ErrorState(event.desc))
             else -> Log.w("Start State", "Unexpected event")
         }
     }
 
 }
 
-class ErrorState : State {
+class ErrorState(val desc: String) : State {
 
     override val nextStatePublishSubject = PublishSubject.create<State>()
 

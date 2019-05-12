@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import com.example.statemachine.model.Event
-import io.reactivex.Observable
 import io.reactivex.Single
 import java.util.concurrent.TimeUnit
 
@@ -16,10 +15,17 @@ class AlertService : Service() {
     private lateinit var alertConsumer: (Event) -> Unit?
 
     private val alerts = listOf(
-        Event.Alert("Alert n°33", 12),
-        Event.Alert("Alert n°43", 12),
-        Event.Alert("Alert n°53", 12),
-        Event.Alert("Alert n°63", 12)
+        Event.Alert("Alert n°1", 5),
+        Event.Alert("Alert n°2", 15),
+        Event.Alert("Alert n°3", 25),
+        Event.Alert("Alert n°4", 35)
+    )
+
+    private val errors = listOf(
+        Event.Error("Error n°1"),
+        Event.Error("Error n°2"),
+        Event.Error("Error n°3"),
+        Event.Error("Error n°4")
     )
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -39,7 +45,7 @@ class AlertService : Service() {
      *
      */
     private fun sendAlert() {
-        getRandomNumber()
+        getRandomNumber(alerts.size)
             .map { i -> alerts[i] }
             .flatMap { alert ->
                 Single.just(alert)
@@ -50,9 +56,9 @@ class AlertService : Service() {
             .subscribe()
     }
 
-    private fun getRandomNumber(): Single<Int> {
+    private fun getRandomNumber(maxSize: Int): Single<Int> {
         return Single.fromCallable {
-            (0 until alerts.size).random()
+            (0 until maxSize).random()
         }
     }
 
@@ -60,17 +66,14 @@ class AlertService : Service() {
      * Send event error every minute to alertConsumer
      */
     private fun sendErrorEveryMinute() {
-        getError()
+        getRandomNumber(errors.size)
+            .map { i -> errors[i] }
             .delay(
                 60, TimeUnit.SECONDS
             )
-            .doOnNext { error -> alertConsumer(error) }
+            .doOnSuccess { error -> alertConsumer(error) }
             .repeat()
             .subscribe()
-    }
-
-    private fun getError(): Observable<Event> {
-        return Observable.just(Event.Error())
     }
 
     inner class AlertServiceBinder : Binder() {

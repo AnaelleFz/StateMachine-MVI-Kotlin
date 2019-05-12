@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
             is StopState -> renderStopState()
             is InitState -> renderInitState()
             is StartState -> renderStartState()
-            is ErrorState -> renderErrorState()
+            is ErrorState -> renderErrorState(state.desc)
             is AlertState -> renderAlertState(state.desc)
             else -> renderStopState()
         }
@@ -110,7 +110,7 @@ class MainActivity : AppCompatActivity() {
         text_message.visibility = View.INVISIBLE
     }
 
-    private fun renderErrorState() {
+    private fun renderErrorState(message: String) {
         motionLayout.transitionToEnd()
         text_state.setText(R.string.error_state)
         text_state.setBackgroundColor(resources.getColor(R.color.colorError))
@@ -118,7 +118,8 @@ class MainActivity : AppCompatActivity() {
         btn_start.visibility = View.GONE
         btn_reset.visibility = View.VISIBLE
         btn_close.visibility = View.GONE
-        text_message.visibility = View.INVISIBLE
+        text_message.visibility = View.VISIBLE
+        text_message.text = message
     }
 
     private fun renderAlertState(message: String) {

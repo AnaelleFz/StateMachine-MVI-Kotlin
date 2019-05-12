@@ -33,7 +33,7 @@ class StateMachineTest {
         stateMachine.setState(AlertState("alert 0"))
         stateMachine.onEvent(Event.Alert("alert 1", 0))
         stateMachine.onEvent(Event.Alert("alert 1", 0))
-        stateMachine.onEvent(Event.Error())
+        stateMachine.onEvent(Event.Error("Error 0"))
         stateMachine.onEvent(Event.Close())
         Assert.assertTrue(stateMachine.currentState is ErrorState)
     }
@@ -44,7 +44,7 @@ class StateMachineTest {
     fun `In stop if error is received then next state is error state`() {
         val stateMachine = StateMachine()
         stateMachine.setState(StopState())
-        stateMachine.onEvent(Event.Error())
+        stateMachine.onEvent(Event.Error("Error 0"))
         Assert.assertTrue(stateMachine.currentState is ErrorState)
     }
 
@@ -74,7 +74,7 @@ class StateMachineTest {
     fun `In init if error is received then next state is error state`() {
         val stateMachine = StateMachine()
         stateMachine.setState(InitState())
-        stateMachine.onEvent(Event.Error())
+        stateMachine.onEvent(Event.Error("Error 0"))
         Assert.assertTrue(stateMachine.currentState is ErrorState)
     }
 
@@ -104,7 +104,7 @@ class StateMachineTest {
     fun `In start if error is received then next state is error state`() {
         val stateMachine = StateMachine()
         stateMachine.setState(StartState())
-        stateMachine.onEvent(Event.Error())
+        stateMachine.onEvent(Event.Error("Error 0"))
         Assert.assertTrue(stateMachine.currentState is ErrorState)
     }
 
@@ -141,7 +141,7 @@ class StateMachineTest {
     @Test
     fun `In error if reset is received then next state is stop state`() {
         val stateMachine = StateMachine()
-        stateMachine.setState(ErrorState())
+        stateMachine.setState(ErrorState("Error 0"))
         stateMachine.onEvent(Event.Reset())
         Assert.assertTrue(stateMachine.currentState is StopState)
     }
@@ -149,12 +149,12 @@ class StateMachineTest {
     @Test
     fun `In error if other event (than reset) is received then SM remains in stop state`() {
         val stateMachine = StateMachine()
-        stateMachine.setState(ErrorState())
+        stateMachine.setState(ErrorState("Error 0"))
         stateMachine.onEvent(Event.Start())
         stateMachine.onEvent(Event.StartAndTimerEnds())
         stateMachine.onEvent(Event.Alert("alert 1", 0))
         stateMachine.onEvent(Event.Close())
-        stateMachine.onEvent(Event.Error())
+        stateMachine.onEvent(Event.Error("Error 1"))
         Assert.assertTrue(stateMachine.currentState is ErrorState)
     }
 
